@@ -5,17 +5,33 @@ globals [
   ;; GIS Data
   myEnvelope
   lac
+  lakeCells
   place
+  ;; global init variables
+  nbTeam1
+  nbTeam2
 ]
 
 villages-own[
-  nom
+  lakeVillage ;; bol
+  myFisherboat
+]
+
+boats-own[
+ myVillage
 ]
 
 extensions [gis]
 
+to InitiVar
+  set nbTeam1 20
+  set nbTeam2 40
+end
+
 to setup
   clear-all
+  reset-ticks
+  InitiVar
   set myEnvelope gis:load-dataset "data/envelope.shp"
   set lac gis:load-dataset "data/lac.shp"
   set place gis:load-dataset "data/villages.shp"
@@ -30,33 +46,52 @@ to setup
   ask patches gis:intersecting lac [
    set pcolor blue
   ]
-  create-place
+  set lakeCells patches with[pcolor = blue]
+
+
+  ask villages [
+    ifelse any? patches with[pcolor = blue] in-radius 5 [
+      set lakeVillage TRUE
+    ][
+     set lakeVillage FALSE
+    ]
+  ]
+
+  ask villages with[lakeVillage = TRUE][
+    let _nearestPatch min-one-of (patches with [pcolor = blue])[distance myself]
+    move-to _nearestPatch ;; on déplace les villages près de l'eau
+    set color one-of (list ((random 14) * 10 + 6 ) ((random 14) * 10 + 3 ))
+    ;set fisherTeam2 nbTeam2
+    let _myColor [color] of self
+    ask patch-here[
+      sprout-boats nbTeam1 [
+        set color _myColor
+        set shape "fisherboat"
+      ]
+    ]
+
+
+  ]
 end
 
 to setup-world-envelope
 gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
-to create-place
-;; pour chaque vecteur dans la base
-  ;show gis:feature-list-of place
-  foreach gis:feature-list-of place[
-    i ->
-    ;show gis:location-of i
-;        let location gis:centroid-of i
-;
-;        if not empty? location [
-;            create-villages 1[
-;              set xcor item 0 location
-;              set ycor item 1 location
-;              set size 0.23
-;              set shape "circle"
-;              set color 23
-;              set hidden? false
-;            ]
-;
-;        ]
-    ]
+to go
+  ask boats[
+    move
+    fishing
+  ]
+  tick
+end
+
+to move
+
+  move-to one-of lakeCells
+end
+
+to fishing
 
 end
 @#$#@#$#@
@@ -95,6 +130,23 @@ BUTTON
 NIL
 setup
 NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+32
+78
+98
+111
+NIL
+go
+T
 1
 T
 OBSERVER
@@ -257,6 +309,13 @@ Polygon -1 true false 135 195 119 235 95 218 76 210 46 204 60 165
 Polygon -1 true false 75 45 83 77 71 103 86 114 166 78 135 60
 Polygon -7500403 true true 30 136 151 77 226 81 280 119 292 146 292 160 287 170 270 195 195 210 151 212 30 166
 Circle -16777216 true false 215 106 30
+
+fisherboat
+true
+0
+Polygon -7500403 true true 60 120 75 135 225 135 240 120 240 135 225 150 75 150 60 135
+Line -7500403 true 225 120 255 165
+Circle -7500403 true true 240 150 30
 
 flag
 false
