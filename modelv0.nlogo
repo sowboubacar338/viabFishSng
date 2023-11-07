@@ -10,6 +10,12 @@ globals [
   ;; global init variables
   nbTeam1
   nbTeam2
+  ;; global output
+  sumBiomass
+]
+
+patches-own[
+ biomass ; un %
 ]
 
 villages-own[
@@ -44,7 +50,8 @@ to setup
   ]
 
   ask patches gis:intersecting lac [
-   set pcolor blue
+    set pcolor blue
+    set biomass random 100
   ]
   set lakeCells patches with[pcolor = blue]
 
@@ -79,10 +86,12 @@ gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
 to go
+  ask lakeCells [grow-biomass]
   ask boats[
     move
     fishing
   ]
+  statSummary
   tick
 end
 
@@ -92,7 +101,20 @@ to move
 end
 
 to fishing
+  let _fishAvalableHere [biomass] of patch-here
+  ask patch-here [
+   set biomass _fishAvalableHere / 2
+  ]
+end
 
+
+to grow-biomass  ; patch procedure
+  set biomass 100 * (1 / (1 + exp(- upBiomass * biomass)))
+  set pcolor scale-color blue biomass 0 100
+end
+
+to statSummary
+    set sumBiomass sum [biomass] of lakeCells
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -155,6 +177,50 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+630
+21
+802
+54
+upBiomass
+upBiomass
+0
+0.1
+0.0
+0.0001
+1
+NIL
+HORIZONTAL
+
+PLOT
+630
+63
+830
+213
+Lake Biomass
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot sumBiomass"
+
+MONITOR
+632
+246
+717
+291
+NIL
+count boats
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
