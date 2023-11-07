@@ -10,6 +10,8 @@ globals [
   ;; global init variables
   nbTeam1
   nbTeam2
+  r ; annual growth rate
+  k ; caring capacity in kg
   ;; global output
   sumBiomass
 ]
@@ -32,6 +34,8 @@ extensions [gis]
 to InitiVar
   set nbTeam1 20
   set nbTeam2 40
+  set r 0.015
+  set k  (900000 * 1000) / 2144
 end
 
 to setup
@@ -51,9 +55,12 @@ to setup
 
   ask patches gis:intersecting lac [
     set pcolor blue
-    set biomass random 100
   ]
   set lakeCells patches with[pcolor = blue]
+  let _nblakeCells count lakeCells
+  ask lakeCells [
+    set biomass (k / _nblakeCells)
+  ]
 
 
   ask villages [
@@ -79,6 +86,7 @@ to setup
 
 
   ]
+  statSummary
 end
 
 to setup-world-envelope
@@ -91,6 +99,7 @@ to go
     move
     fishing
   ]
+  if sumBiomass <= 0[stop]
   statSummary
   tick
 end
@@ -102,15 +111,22 @@ end
 
 to fishing
   let _fishAvalableHere [biomass] of patch-here
-  ask patch-here [
-   set biomass _fishAvalableHere / 2
+  ifelse _fishAvalableHere > 0 [
+    ask patch-here [
+      set biomass biomass - capture
+    ]
+  ][
+    set biomass biomass - _fishAvalableHere
   ]
 end
 
 
 to grow-biomass  ; patch procedure
-  set biomass 100 * (1 / (1 + exp(- upBiomass * biomass)))
-  set pcolor scale-color blue biomass 0 100
+  let _previousBiomass biomass
+  ;show word "premier terme" (r * _previousBiomass)
+  ; show word "sec terme" (1 - (_previousBiomass / k))
+  set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3
+  set pcolor scale-color blue biomass 0 (k / count lakeCells)
 end
 
 to statSummary
@@ -178,21 +194,6 @@ NIL
 NIL
 1
 
-SLIDER
-630
-21
-802
-54
-upBiomass
-upBiomass
-0
-0.1
-0.0
-0.0001
-1
-NIL
-HORIZONTAL
-
 PLOT
 630
 63
@@ -221,6 +222,38 @@ count boats
 17
 1
 11
+
+BUTTON
+32
+115
+95
+148
+NIL
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+641
+308
+813
+341
+capture
+capture
+0
+30
+30.0
+1
+1
+kg
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
