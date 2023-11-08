@@ -17,6 +17,7 @@ globals [
 ]
 
 patches-own[
+ lake ;bol
  biomass ; un %
 ]
 
@@ -46,6 +47,10 @@ to setup
   set lac gis:load-dataset "data/lac.shp"
   set place gis:load-dataset "data/villages.shp"
   setup-world-envelope
+  ask patches [
+    set pcolor gray
+    set lake FALSE
+  ]
   ask patches gis:intersecting place [
     sprout-villages 1 [
       set shape "circle"
@@ -55,6 +60,7 @@ to setup
 
   ask patches gis:intersecting lac [
     set pcolor blue
+    set lake TRUE
   ]
   set lakeCells patches with[pcolor = blue]
   let _nblakeCells count lakeCells
@@ -94,7 +100,12 @@ gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
 to go
-  ask lakeCells [grow-biomass]
+  diffuse biomass 0.5
+  ask patches with[lake = FALSE][set biomass 0]
+
+  ask lakeCells [
+    grow-biomass
+  ]
   ask boats[
     move
     fishing
@@ -248,8 +259,8 @@ SLIDER
 capture
 capture
 0
-30
-30.0
+50
+8.0
 1
 1
 kg
