@@ -28,11 +28,13 @@ villages-own[
 
 boats-own[
  myVillage
+  team
 ]
 
 extensions [gis]
 
 to InitiVar
+
   set nbTeam1 20
   set nbTeam2 40
   set r 0.015
@@ -58,6 +60,7 @@ to setup
     ]
   ]
 
+
   ask patches gis:intersecting lac [
     set pcolor blue
     set lake TRUE
@@ -77,6 +80,9 @@ to setup
     ]
   ]
 
+    let _nbTeam (nbBoats / count villages with[lakeVillage = TRUE]) / 3
+  show _nbTeam
+
   ask villages with[lakeVillage = TRUE][
     let _nearestPatch min-one-of (patches with [pcolor = blue])[distance myself]
     move-to _nearestPatch ;; on déplace les villages près de l'eau
@@ -84,9 +90,15 @@ to setup
     ;set fisherTeam2 nbTeam2
     let _myColor [color] of self
     ask patch-here[
-      sprout-boats nbTeam1 [
+      sprout-boats _nbTeam  [   ;;Team1
         set color _myColor
         set shape "fisherboat"
+        set team 1
+      ]
+      sprout-boats (_nbTeam * 2)  [   ;;Team2
+        set color _myColor
+        set shape "fisherboat"
+        set team 2
       ]
     ]
 
@@ -260,13 +272,33 @@ capture
 capture
 0
 50
-8.0
+5.0
 1
 1
 kg
 HORIZONTAL
 
+SLIDER
+642
+353
+814
+386
+nbBoats
+nbBoats
+0
+500
+360.0
+1
+1
+NIL
+HORIZONTAL
+
 @#$#@#$#@
+## TODO
+
+- les pirogues se déplace au hazard, est-ce qu'on garde un truc comme ça ?
+- Pas de réserve, a ajouter
+
 ## WHAT IS IT?
 
 (a general understanding of what the model is trying to show or explain)
