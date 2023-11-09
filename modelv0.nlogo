@@ -287,7 +287,7 @@ nbBoats
 nbBoats
 0
 500
-360.0
+306.0
 1
 1
 NIL
@@ -298,6 +298,7 @@ HORIZONTAL
 
 - les pirogues se déplace au hazard, est-ce qu'on garde un truc comme ça ?
 - Pas de réserve, a ajouter
+- typha
 
 ## WHAT IS IT?
 
