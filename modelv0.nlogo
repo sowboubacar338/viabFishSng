@@ -14,6 +14,9 @@ globals [
   k ; caring capacity in kg
   ;; global output
   sumBiomass
+  EffortMbanais
+  EffortMalien
+  capital
 ]
 
 patches-own[
@@ -128,21 +131,28 @@ to go
 end
 
 to move
-
   move-to one-of lakeCells
 end
 
+; pirogue sur un seul patch alors que peche sur 3km de filet donc mettre un radius au lieu de patch par patch ? ou un tick = un patch peut etre dans la meme journée ?
+; hyp : plusieurs ticks par jour et ca sur quelques mois/annees
+
 to fishing
   let _fishAvalableHere [biomass] of patch-here
-  ifelse _fishAvalableHere > 0 [
-    ask patch-here [
-      set biomass biomass - capture
+  ifelse _fishAvalableHere > 0 [ ;besoin que d un if non ?
+    if team = 1 [
+        ask patch-here [
+        set biomass max list (biomass - captureMbanais) 0 ;; _fishAvalableHere ou biomass ?
+    ]]
+    if team = 2 [
+        ask patch-here [
+        set biomass max list (biomass - captureMaliens) 0
+    ]]
     ]
-  ][
-    set biomass biomass - _fishAvalableHere
+  [
+    set biomass biomass ;- _fishAvalableHere ;utile ??
   ]
 end
-
 
 to grow-biomass  ; patch procedure
   let _previousBiomass biomass
@@ -153,17 +163,20 @@ to grow-biomass  ; patch procedure
 end
 
 to statSummary
-    set sumBiomass sum [biomass] of lakeCells
+  set sumBiomass sum [biomass] of lakeCells
+  ;set EffortMbanais captureMbanais * count boats with [team = 1]
+  ;set EffortMalien captureMaliens * count boats with [team = 2]
+  ;set capital PrixPoisson * (EffortMbanais + EffortMalien) * biomass - CoutMaintenance * nbBoats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 119
-10
-599
-491
+33
+553
+468
 -1
 -1
-3.35
+3.025
 1
 10
 1
@@ -264,33 +277,78 @@ NIL
 1
 
 SLIDER
-641
-308
-813
-341
-capture
-capture
+635
+331
+807
+364
+captureMbanais
+captureMbanais
 0
 50
-5.0
+10.0
 1
 1
-kg
+kg/jour
 HORIZONTAL
 
 SLIDER
-642
-353
-814
-386
+635
+394
+807
+427
 nbBoats
 nbBoats
 0
 500
-306.0
+305.0
 1
 1
 NIL
+HORIZONTAL
+
+SLIDER
+635
+449
+807
+482
+PrixPoisson
+PrixPoisson
+0
+10000
+1100.0
+100
+1
+CFA/kg
+HORIZONTAL
+
+SLIDER
+825
+331
+997
+364
+captureMaliens
+captureMaliens
+0
+50
+15.0
+1
+1
+kg/jour
+HORIZONTAL
+
+SLIDER
+825
+448
+997
+481
+CoutMaintenance
+CoutMaintenance
+0
+100000
+15000.0
+10000
+1
+CFA
 HORIZONTAL
 
 @#$#@#$#@
