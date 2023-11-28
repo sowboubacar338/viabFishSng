@@ -134,39 +134,36 @@ to move
   move-to one-of lakeCells
 end
 
-; pirogue sur un seul patch alors que peche sur 3km de filet donc mettre un radius au lieu de patch par patch ? ou un tick = un patch peut etre dans la meme journée ?
-; hyp : plusieurs ticks par jour et ca sur quelques mois/annees
-
+; 1 tick = 1 journée
+; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
+; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
 to fishing
   let _fishAvalableHere [biomass] of patch-here
-  ifelse _fishAvalableHere > 0 [ ;besoin que d un if non ?
+  if _fishAvalableHere > 0 [
     if team = 1 [
         ask patch-here [
-        set biomass max list (biomass - captureMbanais) 0 ;; _fishAvalableHere ou biomass ?
+        set biomass max list (_fishAvalableHere - captureMbanais) 0
     ]]
     if team = 2 [
         ask patch-here [
-        set biomass max list (biomass - captureMaliens) 0
+        set biomass max list (_fishAvalableHere - captureMaliens) 0
     ]]
     ]
-  [
-    set biomass biomass ;- _fishAvalableHere ;utile ??
-  ]
 end
 
 to grow-biomass  ; patch procedure
   let _previousBiomass biomass
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
-  set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3
+  set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3 ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
   set pcolor scale-color blue biomass 0 (k / count lakeCells)
 end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
-  ;set EffortMbanais captureMbanais * count boats with [team = 1]
-  ;set EffortMalien captureMaliens * count boats with [team = 2]
-  ;set capital PrixPoisson * (EffortMbanais + EffortMalien) * biomass - CoutMaintenance * nbBoats
+  set EffortMbanais captureMbanais * count boats with [team = 1]
+  set EffortMalien captureMaliens * count boats with [team = 2]
+  set capital PrixPoisson * (EffortMbanais + EffortMalien) * sumBiomass - CoutMaintenance * nbBoats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -349,6 +346,21 @@ CoutMaintenance
 10000
 1
 CFA
+HORIZONTAL
+
+SLIDER
+764
+256
+936
+289
+LongueurFilet
+LongueurFilet
+0
+10
+3.0
+1
+1
+Km
 HORIZONTAL
 
 @#$#@#$#@
