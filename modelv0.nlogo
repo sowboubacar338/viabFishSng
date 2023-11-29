@@ -8,15 +8,16 @@ globals [
   lakeCells
   place
   ;; global init variables
-  nbTeam1
-  nbTeam2
+  ;nbTeam1
+  ;nbTeam2
   r ; annual growth rate
   k ; caring capacity in kg
   ;; global output
   sumBiomass
-  EffortMbanais
-  EffortMalien
+  EffortSenegalais
+  EffortEtrangers
   capital
+  capitalTotal
 ]
 
 patches-own[
@@ -32,16 +33,19 @@ villages-own[
 boats-own[
  myVillage
   team
+  ReleveFilet
 ]
 
 extensions [gis]
 
 to InitiVar
 
-  set nbTeam1 20
-  set nbTeam2 40
+  ;set nbTeam1 20
+  ;set nbTeam2 40
+  ;set capital 0
   set r 0.015
   set k  (900000 * 1000) / 2144
+
 end
 
 to setup
@@ -68,6 +72,7 @@ to setup
     set pcolor blue
     set lake TRUE
   ]
+
   set lakeCells patches with[pcolor = blue]
   let _nblakeCells count lakeCells
   ask lakeCells [
@@ -83,7 +88,7 @@ to setup
     ]
   ]
 
-    let _nbTeam (nbBoats / count villages with[lakeVillage = TRUE]) / 3
+    let _nbTeam precision ((nbBoats / count villages with[lakeVillage = TRUE]) / 3) 0
   show _nbTeam
 
   ask villages with[lakeVillage = TRUE][
@@ -121,10 +126,42 @@ to go
   ask lakeCells [
     grow-biomass
   ]
-  ask boats[
-    move
-    fishing
+
+  ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
+  ask boats with [team = 1] [
+    set ReleveFilet 0
+    ;set capital 0
+    ; 1 tick = 1 journée
+    ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
+    ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
+    while [ReleveFilet <= LongueurFilet / 250][
+      move
+      fishingSenegalais
+      ;let _fishAvalableHere [biomass] of patch-here
+      ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
+      ;set capital capital + max list (PrixPoisson *  biomass - CoutMaintenance) 0
+      set ReleveFilet ReleveFilet + 1
+      ;set capital capital + max list (PrixPoisson *  ((CaptureSenegalais) * _fishAvalableHere) - CoutMaintenance) 0
+    ]
+
   ]
+
+  ask boats with [team = 2] [
+    set ReleveFilet 0
+    ;set capital 0
+    ; 1 tick = 1 journée
+    ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
+    ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
+    while [ReleveFilet <= (LongueurFilet / 250) * 1.5][
+      move
+      fishingEtrangers
+      ;let _fishAvalableHere [biomass] of patch-here
+      set ReleveFilet ReleveFilet + 1
+      ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
+    ]
+
+  ]
+
   if sumBiomass <= 0[stop]
   statSummary
   tick
@@ -134,21 +171,24 @@ to move
   move-to one-of lakeCells
 end
 
-; 1 tick = 1 journée
-; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
-; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-to fishing
+to fishingSenegalais
   let _fishAvalableHere [biomass] of patch-here
-  if _fishAvalableHere > 0 [
-    if team = 1 [
-        ask patch-here [
-        set biomass max list (_fishAvalableHere - captureMbanais) 0
-    ]]
-    if team = 2 [
-        ask patch-here [
-        set biomass max list (_fishAvalableHere - captureMaliens) 0
-    ]]
+  ifelse _fishAvalableHere > 0 [
+    ask patch-here [
+      set biomass (_fishAvalableHere - (captureSenegalais / 12 )) ; 3000/250 = 12
+  ]] [
+    set biomass biomass - _fishAvalableHere
     ]
+end
+
+to fishingEtrangers
+  let _fishAvalableHere [biomass] of patch-here
+  ifelse _fishAvalableHere > 0 [
+  ask patch-here [
+      set biomass (_fishAvalableHere - (captureEtrangers / 12 ))
+  ]][
+    set biomass biomass - _fishAvalableHere
+  ]
 end
 
 to grow-biomass  ; patch procedure
@@ -161,9 +201,9 @@ end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
-  set EffortMbanais captureMbanais * count boats with [team = 1]
-  set EffortMalien captureMaliens * count boats with [team = 2]
-  set capital PrixPoisson * (EffortMbanais + EffortMalien) * sumBiomass - CoutMaintenance * nbBoats
+  set EffortSenegalais captureSenegalais * count boats with [team = 1]
+  set EffortEtrangers captureEtrangers * count boats with [team = 2]
+  set capital PrixPoisson * (EffortSenegalais + EffortEtrangers) - CoutMaintenance * nbBoats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -233,7 +273,7 @@ PLOT
 830
 213
 Lake Biomass
-NIL
+Jour
 NIL
 0.0
 10.0
@@ -274,15 +314,15 @@ NIL
 1
 
 SLIDER
-635
-331
-807
-364
-captureMbanais
-captureMbanais
+636
+332
+805
+365
+captureSenegalais
+captureSenegalais
 0
 50
-10.0
+5.0
 1
 1
 kg/jour
@@ -297,7 +337,7 @@ nbBoats
 nbBoats
 0
 500
-305.0
+306.0
 1
 1
 NIL
@@ -312,7 +352,7 @@ PrixPoisson
 PrixPoisson
 0
 10000
-1100.0
+1500.0
 100
 1
 CFA/kg
@@ -321,13 +361,13 @@ HORIZONTAL
 SLIDER
 825
 331
-997
+998
 364
-captureMaliens
-captureMaliens
+captureEtrangers
+captureEtrangers
 0
 50
-15.0
+5.0
 1
 1
 kg/jour
@@ -336,16 +376,16 @@ HORIZONTAL
 SLIDER
 825
 448
-997
+1034
 481
 CoutMaintenance
 CoutMaintenance
 0
-100000
-15000.0
 10000
+2000.0
+1000
 1
-CFA
+CFA/Jour
 HORIZONTAL
 
 SLIDER
@@ -356,12 +396,30 @@ SLIDER
 LongueurFilet
 LongueurFilet
 0
-10
-3.0
+10000
+3000.0
+250
 1
-1
-Km
+Mètres
 HORIZONTAL
+
+PLOT
+888
+62
+1088
+212
+Capital par pêcheur
+Jour
+Capital CFA
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot capital / nbBoats"
 
 @#$#@#$#@
 ## TODO
