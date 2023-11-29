@@ -173,22 +173,23 @@ end
 
 to fishingSenegalais
   let _fishAvalableHere [biomass] of patch-here
-  ifelse _fishAvalableHere > 0 [
+  if _fishAvalableHere > 0 [
     ask patch-here [
       set biomass (_fishAvalableHere - (captureSenegalais / 12 )) ; 3000/250 = 12
-  ]] [
-    set biomass biomass - _fishAvalableHere
-    ]
+  ]]
+  ;[
+    ;set biomass biomass - _fishAvalableHere]
 end
 
 to fishingEtrangers
   let _fishAvalableHere [biomass] of patch-here
-  ifelse _fishAvalableHere > 0 [
+  if _fishAvalableHere > 0 [
   ask patch-here [
       set biomass (_fishAvalableHere - (captureEtrangers / 12 ))
-  ]][
-    set biomass biomass - _fishAvalableHere
-  ]
+  ]]
+  ;[
+    ;set biomass biomass - _fishAvalableHere
+  ;]
 end
 
 to grow-biomass  ; patch procedure
@@ -234,10 +235,10 @@ ticks
 30.0
 
 BUTTON
-32
-42
-99
-75
+31
+38
+98
+71
 NIL
 setup
 NIL
@@ -322,7 +323,7 @@ captureSenegalais
 captureSenegalais
 0
 50
-5.0
+10.0
 1
 1
 kg/jour
@@ -367,7 +368,7 @@ captureEtrangers
 captureEtrangers
 0
 50
-5.0
+16.0
 1
 1
 kg/jour
@@ -382,7 +383,7 @@ CoutMaintenance
 CoutMaintenance
 0
 10000
-2000.0
+4000.0
 1000
 1
 CFA/Jour
