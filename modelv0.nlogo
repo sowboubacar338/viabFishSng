@@ -34,6 +34,8 @@ boats-own[
  myVillage
   team
   ReleveFilet
+  capture_totale
+  capture
 ]
 
 extensions [gis]
@@ -130,13 +132,15 @@ to go
   ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
   ask boats with [team = 1] [
     set ReleveFilet 0
+    set capture_totale 0 ; chaque jour capture initialement 0
     ;set capital 0
     ; 1 tick = 1 journée
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-    while [ReleveFilet <= LongueurFilet / 250][
+    while [ReleveFilet < (LongueurFilet / 250)][
       move
       fishingSenegalais
+      set capture_totale capture_totale + capture
       ;let _fishAvalableHere [biomass] of patch-here
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
       ;set capital capital + max list (PrixPoisson *  biomass - CoutMaintenance) 0
@@ -148,13 +152,15 @@ to go
 
   ask boats with [team = 2] [
     set ReleveFilet 0
+    set capture_totale 0
     ;set capital 0
     ; 1 tick = 1 journée
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-    while [ReleveFilet <= (LongueurFilet / 250) * 1.5][
+    while [ReleveFilet < (LongueurFilet / 250) * 1.5][
       move
       fishingEtrangers
+      set capture_totale capture_totale + capture
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
       ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
@@ -173,23 +179,32 @@ end
 
 to fishingSenegalais
   let _fishAvalableHere [biomass] of patch-here
-  if _fishAvalableHere > 0 [
+  ifelse _fishAvalableHere > (captureSenegalais / 12 ) [
     ask patch-here [
-      set biomass (_fishAvalableHere - (captureSenegalais / 12 )) ; 3000/250 = 12
-  ]]
-  ;[
-    ;set biomass biomass - _fishAvalableHere]
+      set biomass (_fishAvalableHere - (captureSenegalais / 12 )) ; 3000m/250m = 12
+  ]
+  set capture (captureSenegalais / 12)
+  ]
+  [ ask patch-here [
+    set biomass max list (_fishAvalableHere - (captureSenegalais / 12 )) 0
+    ]
+    set capture max list(_fishAvalableHere) 0
+  ]
 end
 
 to fishingEtrangers
   let _fishAvalableHere [biomass] of patch-here
-  if _fishAvalableHere > 0 [
-  ask patch-here [
-      set biomass (_fishAvalableHere - (captureEtrangers / 12 ))
-  ]]
-  ;[
-    ;set biomass biomass - _fishAvalableHere
-  ;]
+  ifelse _fishAvalableHere > (captureEtrangers / 12 ) [
+    ask patch-here [
+      set biomass (_fishAvalableHere - (captureEtrangers / 12 )) ; 3000m/250m = 12
+  ]
+  set capture (captureEtrangers / 12)
+  ]
+  [ ask patch-here [
+    set biomass max list (_fishAvalableHere - (captureEtrangers / 12 )) 0
+    ]
+    set capture max list(_fishAvalableHere) 0
+  ]
 end
 
 to grow-biomass  ; patch procedure
@@ -323,7 +338,7 @@ captureSenegalais
 captureSenegalais
 0
 50
-10.0
+5.0
 1
 1
 kg/jour
@@ -368,7 +383,7 @@ captureEtrangers
 captureEtrangers
 0
 50
-16.0
+5.0
 1
 1
 kg/jour
