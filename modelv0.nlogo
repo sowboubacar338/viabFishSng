@@ -14,10 +14,9 @@ globals [
   k ; caring capacity in kg
   ;; global output
   sumBiomass
-  EffortSenegalais
-  EffortEtrangers
-  capital
-  capitalTotal
+  ;EffortSenegalais
+  ;EffortEtrangers
+  capital_lac
 ]
 
 patches-own[
@@ -36,6 +35,8 @@ boats-own[
   ReleveFilet
   capture_totale
   capture
+  capital_total
+  capital
 ]
 
 extensions [gis]
@@ -133,20 +134,25 @@ to go
   ask boats with [team = 1] [
     set ReleveFilet 0
     set capture_totale 0 ; chaque jour capture initialement 0
-    ;set capital 0
+    ;set capital_total 0
     ; 1 tick = 1 journée
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-    while [ReleveFilet < (LongueurFilet / 250)][
+    ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)
+    [while [ReleveFilet < (LongueurFilet / 250)][
       move
       fishingSenegalais
       set capture_totale capture_totale + capture
-      ;let _fishAvalableHere [biomass] of patch-here
+      set capital_total capital_total + capital
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
-      ;set capital capital + max list (PrixPoisson *  biomass - CoutMaintenance) 0
       set ReleveFilet ReleveFilet + 1
-      ;set capital capital + max list (PrixPoisson *  ((CaptureSenegalais) * _fishAvalableHere) - CoutMaintenance) 0
     ]
+    ][
+      set capture 0
+      set capture_totale capture_totale + capture
+      set capital_total capital_total + capital
+    ]
+
 
   ]
 
@@ -157,6 +163,7 @@ to go
     ; 1 tick = 1 journée
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
+    ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
     while [ReleveFilet < (LongueurFilet / 250) * 1.5][
       move
       fishingEtrangers
@@ -164,8 +171,12 @@ to go
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
       ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
+    ]]
+    [
+      set capture 0
+      set capture_totale capture_totale + capture
+      set capital_total capital_total + capital
     ]
-
   ]
 
   if sumBiomass <= 0[stop]
@@ -184,11 +195,13 @@ to fishingSenegalais
       set biomass (_fishAvalableHere - (captureSenegalais / 12 )) ; 3000m/250m = 12
   ]
   set capture (captureSenegalais / 12)
+  set capital (PrixPoisson * capture) - CoutMaintenance
   ]
   [ ask patch-here [
     set biomass max list (_fishAvalableHere - (captureSenegalais / 12 )) 0
     ]
     set capture max list(_fishAvalableHere) 0
+    set capital (PrixPoisson * capture) - CoutMaintenance
   ]
 end
 
@@ -217,9 +230,9 @@ end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
-  set EffortSenegalais captureSenegalais * count boats with [team = 1]
-  set EffortEtrangers captureEtrangers * count boats with [team = 2]
-  set capital PrixPoisson * (EffortSenegalais + EffortEtrangers) - CoutMaintenance * nbBoats
+  ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
+  ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
+  set capital_lac sum[capital_total] of boats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -435,7 +448,22 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot capital / nbBoats"
+"default" 1.0 0 -16777216 true "" "plot capital_lac"
+
+SLIDER
+969
+256
+1142
+289
+ReserveIntegrale
+ReserveIntegrale
+0
+12
+10.0
+1
+1
+mois
+HORIZONTAL
 
 @#$#@#$#@
 ## TODO
