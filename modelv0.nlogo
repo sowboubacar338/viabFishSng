@@ -81,7 +81,7 @@ to setup
   ask patches gis:intersecting exclusionPeche [
     set pcolor green
     set exclusionPeche TRUE
-  ]
+  ]; ici ou en dessous de diffusion de la biomasse ?
 
   set lakeCells patches with[pcolor = blue]
   let _nblakeCells count lakeCells
