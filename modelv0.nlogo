@@ -7,6 +7,7 @@ globals [
   lac
   lakeCells
   place
+  exclusionPeche
   ;; global init variables
   ;nbTeam1
   ;nbTeam2
@@ -58,6 +59,7 @@ to setup
   set myEnvelope gis:load-dataset "data/envelope.shp"
   set lac gis:load-dataset "data/lac.shp"
   set place gis:load-dataset "data/villages.shp"
+  set exclusionPeche gis:load-dataset "data/zoneExclusionPeche.shp"
   setup-world-envelope
   ask patches [
     set pcolor gray
@@ -74,6 +76,11 @@ to setup
   ask patches gis:intersecting lac [
     set pcolor blue
     set lake TRUE
+  ]
+
+  ask patches gis:intersecting exclusionPeche [
+    set pcolor green
+    set exclusionPeche TRUE
   ]
 
   set lakeCells patches with[pcolor = blue]
@@ -232,7 +239,7 @@ to statSummary
   set sumBiomass sum [biomass] of lakeCells
   ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
   ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
-  set capital_lac sum[capital_total] of boats
+  set capital_lac mean[capital_total] of boats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -381,7 +388,7 @@ PrixPoisson
 PrixPoisson
 0
 10000
-1500.0
+2000.0
 100
 1
 CFA/kg
@@ -411,7 +418,7 @@ CoutMaintenance
 CoutMaintenance
 0
 10000
-4000.0
+2000.0
 1000
 1
 CFA/Jour
