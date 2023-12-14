@@ -332,10 +332,10 @@ NIL
 1
 
 PLOT
-630
-63
-830
-213
+632
+37
+832
+187
 Lake Biomass
 Jour
 NIL
@@ -386,7 +386,7 @@ captureSenegalais
 captureSenegalais
 0
 50
-6.0
+10.0
 1
 1
 kg/jour
@@ -416,7 +416,7 @@ PrixPoisson
 PrixPoisson
 0
 10000
-2000.0
+1065.0
 100
 1
 CFA/kg
@@ -431,7 +431,7 @@ captureEtrangers
 captureEtrangers
 0
 50
-5.0
+10.0
 1
 1
 kg/jour
@@ -446,7 +446,7 @@ CoutMaintenance
 CoutMaintenance
 0
 10000
-2000.0
+2700.0
 1000
 1
 CFA/Jour
@@ -468,10 +468,10 @@ Mètres
 HORIZONTAL
 
 PLOT
-888
-62
-1088
-212
+886
+37
+1086
+187
 Capital par pêcheur
 Jour
 Capital CFA
@@ -494,17 +494,17 @@ ReserveIntegrale
 ReserveIntegrale
 0
 12
-10.0
+6.0
 1
 1
 mois
 HORIZONTAL
 
 SWITCH
-1122
-301
-1286
-334
+1124
+335
+1288
+368
 ZonesExclusionPeche
 ZonesExclusionPeche
 0
@@ -525,6 +525,46 @@ ZoneInterdictionPeche
 1
 %
 HORIZONTAL
+
+TEXTBOX
+746
+212
+896
+251
+La longueur des filets controle le nombre de sorties par jour (3km = 1 sortie)
+10
+0.0
+1
+
+TEXTBOX
+931
+189
+1117
+267
+Une réserve intégrale de 8 mois par exemple signifie qu'il y a une interdiction de pêche pendant 8 mois, et sur les 4 restants les autres restrictions peuvent etre mises en place
+10
+0.0
+1
+
+TEXTBOX
+1126
+215
+1276
+254
+Pourcentage du lac concerné par une interdiction de pêche / réserve
+10
+0.0
+1
+
+TEXTBOX
+1125
+296
+1275
+335
+Les zones d'exclusion de pêche correspondent à celles de l'atelier de Mbane de novembre
+10
+0.0
+1
 
 @#$#@#$#@
 ## TODO
