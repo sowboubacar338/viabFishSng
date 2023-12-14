@@ -21,7 +21,9 @@ globals [
 ]
 
 patches-own[
- lake ;bol
+ lake ; bol
+ excluPeche ; bol
+ excluPecheCells ; bol
  biomass ; un %
 ]
 
@@ -61,10 +63,13 @@ to setup
   set place gis:load-dataset "data/villages.shp"
   set exclusionPeche gis:load-dataset "data/zoneExclusionPeche.shp"
   setup-world-envelope
+
   ask patches [
     set pcolor gray
     set lake FALSE
+    set excluPecheCells FALSE
   ]
+
   ask patches gis:intersecting place [
     sprout-villages 1 [
       set shape "circle"
@@ -72,26 +77,33 @@ to setup
     ]
   ]
 
-
   ask patches gis:intersecting lac [
     set pcolor blue
     set lake TRUE
+    set excluPecheCells FALSE
+    set excluPeche FALSE
   ]
 
   ask patches gis:intersecting exclusionPeche [
-    set pcolor green
-    set exclusionPeche TRUE
-  ]; ici ou en dessous de diffusion de la biomasse ?
+      set lake TRUE
+      set excluPecheCells TRUE
+      set excluPeche FALSE
+  ]
 
-  set lakeCells patches with[pcolor = blue]
+  if ZonesExclusionPeche [
+  ask patches with[excluPecheCells = TRUE][
+      set pcolor green
+      set excluPeche TRUE
+  ]]
+
+  set lakeCells patches with[pcolor = blue or pcolor = green]
   let _nblakeCells count lakeCells
   ask lakeCells [
     set biomass (k / _nblakeCells)
   ]
 
-
   ask villages [
-    ifelse any? patches with[pcolor = blue] in-radius 5 [
+    ifelse any? patches with[pcolor = blue or pcolor = green] in-radius 5 [
       set lakeVillage TRUE
     ][
      set lakeVillage FALSE
@@ -102,7 +114,7 @@ to setup
   show _nbTeam
 
   ask villages with[lakeVillage = TRUE][
-    let _nearestPatch min-one-of (patches with [pcolor = blue])[distance myself]
+    let _nearestPatch min-one-of (patches with [pcolor = blue or pcolor = green])[distance myself]
     move-to _nearestPatch ;; on déplace les villages près de l'eau
     set color one-of (list ((random 14) * 10 + 6 ) ((random 14) * 10 + 3 ))
     ;set fisherTeam2 nbTeam2
@@ -122,7 +134,9 @@ to setup
 
 
   ]
+
   statSummary
+
 end
 
 to setup-world-envelope
@@ -135,7 +149,21 @@ to go
 
   ask lakeCells [
     grow-biomass
+    ;set pcolor scale-color blue biomass 0 (k / count lakeCells) ; quand c'est blanc c'est qu'il y a beaucoup de poisson vs noir plus de poisson
   ]
+
+  ifelse ZonesExclusionPeche [
+    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche TRUE]
+    ask lakeCells with[excluPeche = TRUE][
+      set pcolor scale-color green biomass 0 (k / count lakeCells)
+  ]
+  ask lakeCells with[excluPeche = FALSE][
+      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+  ]][
+    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche FALSE]
+    ask lakeCells with[excluPeche = FALSE][
+      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+  ]]
 
   ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
   ask boats with [team = 1] [
@@ -192,7 +220,7 @@ to go
 end
 
 to move
-  move-to one-of lakeCells
+  move-to one-of lakeCells with[excluPeche = FALSE]
 end
 
 to fishingSenegalais
@@ -232,7 +260,7 @@ to grow-biomass  ; patch procedure
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
   set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3 ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
-  set pcolor scale-color blue biomass 0 (k / count lakeCells)
+
 end
 
 to statSummary
@@ -350,25 +378,25 @@ NIL
 1
 
 SLIDER
-636
-332
-805
-365
+637
+362
+806
+395
 captureSenegalais
 captureSenegalais
 0
 50
-5.0
+6.0
 1
 1
 kg/jour
 HORIZONTAL
 
 SLIDER
-635
-394
-807
-427
+637
+404
+809
+437
 nbBoats
 nbBoats
 0
@@ -380,10 +408,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-635
-449
-807
-482
+637
+448
+809
+481
 PrixPoisson
 PrixPoisson
 0
@@ -396,9 +424,9 @@ HORIZONTAL
 
 SLIDER
 825
-331
+362
 998
-364
+395
 captureEtrangers
 captureEtrangers
 0
@@ -425,10 +453,10 @@ CFA/Jour
 HORIZONTAL
 
 SLIDER
-764
-256
-936
-289
+742
+258
+914
+291
 LongueurFilet
 LongueurFilet
 0
@@ -458,10 +486,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot capital_lac"
 
 SLIDER
-969
-256
-1142
-289
+931
+258
+1104
+291
 ReserveIntegrale
 ReserveIntegrale
 0
@@ -470,6 +498,32 @@ ReserveIntegrale
 1
 1
 mois
+HORIZONTAL
+
+SWITCH
+1122
+301
+1286
+334
+ZonesExclusionPeche
+ZonesExclusionPeche
+0
+1
+-1000
+
+SLIDER
+1122
+258
+1302
+291
+ZoneInterdictionPeche
+ZoneInterdictionPeche
+0
+100
+50.0
+1
+1
+%
 HORIZONTAL
 
 @#$#@#$#@
