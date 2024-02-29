@@ -116,7 +116,7 @@ to setup
   ;show _nbTeam
 
   ;; check si l arrondi fait pas de la merde
-  let _nbBoatVillage precision ((nbBoats / count villages with[lakeVillage = TRUE])) 0
+  let _nbBoatVillage ((nbBoats / count villages with[lakeVillage = TRUE]))
   show _nbBoatVillage
 
   ask villages with[lakeVillage = TRUE][
@@ -126,13 +126,13 @@ to setup
     ;set fisherTeam2 nbTeam2
     let _myColor [color] of self
     ask patch-here[
-      sprout-boats _nbBoatVillage * (ProportionSenegalais / 100)  [   ;;Team1 : Sénégalais
+      sprout-boats precision(_nbBoatVillage * (ProportionSenegalais / 100)) 0  [   ;;Team1 : Sénégalais
         set color _myColor
         set shape "fisherboat"
         set team 1
       ]
       ;sprout-boats (_nbTeam * 2)  [   ;;Team2 : étrangers
-      sprout-boats (_nbBoatVillage * (1 - (ProportionSenegalais / 100))) [
+      sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
         set color _myColor
         set shape "fisherboat"
         set team 2
