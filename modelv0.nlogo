@@ -115,6 +115,7 @@ to setup
   ;  let _nbTeam precision ((nbBoats / count villages with[lakeVillage = TRUE]) / 3) 0
   ;show _nbTeam
 
+  ;; check si l arrondi fait pas de la merde
   let _nbBoatVillage precision ((nbBoats / count villages with[lakeVillage = TRUE])) 0
   show _nbBoatVillage
 
@@ -246,7 +247,7 @@ to fishingSenegalais
   let _fishAvalableHere [biomass] of patch-here
 
   ; Proportion de poisson capturée par le filet sur le patch
-  let PropCaptureSenegalais 0.05 * [biomass] of patch-here
+  let PropCaptureSenegalais (PropBiomassPecheSenegalais / 100) * [biomass] of patch-here
 
   ask patch-here[
     set biomass (_fishAvalableHere - PropCaptureSenegalais) ; biomass en kg ??????
@@ -276,7 +277,7 @@ to fishingEtrangers
   let _fishAvalableHere [biomass] of patch-here
 
   ; Proportion de poisson capturée par le filet sur le patch
-  let PropCaptureEtrangers 0.05 * [biomass] of patch-here
+  let PropCaptureEtrangers (PropBiomassPecheEtrangers / 100) * [biomass] of patch-here
 
   ask patch-here[
     set biomass (_fishAvalableHere - PropCaptureEtrangers) ; biomass en kg ??????
@@ -422,10 +423,10 @@ NIL
 1
 
 SLIDER
-637
-404
-809
-437
+633
+313
+805
+346
 nbBoats
 nbBoats
 0
@@ -437,25 +438,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-637
-448
-809
-481
+848
+335
+1020
+368
 PrixPoisson
 PrixPoisson
 0
 10000
-1700.0
+1800.0
 100
 1
 CFA/kg
 HORIZONTAL
 
 SLIDER
-825
-448
-1034
-481
+847
+387
+1056
+420
 CoutMaintenance
 CoutMaintenance
 0
@@ -556,25 +557,25 @@ Les zones d'exclusion de pêche correspondent à celles de l'atelier de Mbane de
 1
 
 SLIDER
-1157
-396
-1329
-429
-BiomassPatch
-BiomassPatch
+1081
+385
+1300
+418
+PropBiomassPecheSenegalais
+PropBiomassPecheSenegalais
 0
 100
-50.0
+5.0
 1
 1
-kg
+%
 HORIZONTAL
 
 SLIDER
-1158
-448
-1345
-481
+1105
+441
+1292
+474
 QtéMaxPoissonPirogue
 QtéMaxPoissonPirogue
 0
@@ -586,15 +587,30 @@ km
 HORIZONTAL
 
 SLIDER
-1157
-351
-1332
-384
+1101
+333
+1276
+366
 ProportionSenegalais
 ProportionSenegalais
 0
 100
 33.0
+1
+1
+%
+HORIZONTAL
+
+SLIDER
+1295
+384
+1508
+417
+PropBiomassPecheEtrangers
+PropBiomassPecheEtrangers
+0
+100
+5.0
 1
 1
 %
