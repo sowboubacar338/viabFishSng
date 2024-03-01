@@ -188,13 +188,16 @@ to go
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; tant que les pêcheurs n'ont pas pêcher 1 filet de 3km = tant que relève filet inférieur à 12,
     ; ils continuent de pêcher
-    [while [ReleveFilet < (LongueurFilet / 250)][
+    ; while [ReleveFilet < (LongueurFilet / 250)][
+    [if ReleveFilet < (LongueurFilet / 250)[
+      if capture_totale < QtéMaxPoissonPirogue [
+      ;while [capture_totale < QtéMaxPoissonPirogue][
       fishingSenegalais
       set capture_totale capture_totale + capture
       move
       set capital_total capital_total + capital
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
-      set ReleveFilet ReleveFilet + 1
+        set ReleveFilet ReleveFilet + 1]
     ]
     ][
       set capture 0
@@ -219,14 +222,15 @@ to go
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; maliens pechent plus donc 1.5 * filet
-    while [ReleveFilet < (LongueurFilet / 250) * 1.5][
+    if ReleveFilet < (LongueurFiletEtrangers / 250)[
+        if capture_totale < QtéMaxPoissonPirogueEtrangers [
       move
       fishingEtrangers
       set capture_totale capture_totale + capture
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
       ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
-    ]]
+    ]]]
     [
       set capture 0
       set capture_totale capture_totale + capture
@@ -377,10 +381,10 @@ NIL
 1
 
 PLOT
-632
-37
-832
-187
+590
+38
+790
+188
 Lake Biomass
 Jour
 NIL
@@ -395,10 +399,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot sumBiomass"
 
 MONITOR
-632
-246
-717
-291
+590
+221
+675
+266
 NIL
 count boats
 17
@@ -423,10 +427,10 @@ NIL
 1
 
 SLIDER
-633
-313
-805
-346
+590
+263
+762
+296
 nbBoats
 nbBoats
 0
@@ -438,25 +442,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-848
-335
-1020
-368
+591
+508
+763
+541
 PrixPoisson
 PrixPoisson
 0
 10000
-1800.0
+1900.0
 100
 1
 CFA/kg
 HORIZONTAL
 
 SLIDER
-847
-387
-1056
-420
+590
+552
+799
+585
 CoutMaintenance
 CoutMaintenance
 0
@@ -468,10 +472,10 @@ CFA/Jour
 HORIZONTAL
 
 SLIDER
-742
-258
-914
-291
+590
+378
+762
+411
 LongueurFilet
 LongueurFilet
 0
@@ -483,10 +487,10 @@ Mètres
 HORIZONTAL
 
 PLOT
-928
-37
-1128
-187
+824
+39
+1024
+189
 Capital par pêcheur
 Jour
 Capital CFA
@@ -501,10 +505,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot capital_lac"
 
 SLIDER
-931
-258
-1104
-291
+1046
+155
+1219
+188
 ReserveIntegrale
 ReserveIntegrale
 0
@@ -516,10 +520,10 @@ mois
 HORIZONTAL
 
 SWITCH
-1122
-258
-1286
-291
+1250
+156
+1414
+189
 ZonesExclusionPeche
 ZonesExclusionPeche
 0
@@ -527,40 +531,40 @@ ZonesExclusionPeche
 -1000
 
 TEXTBOX
-746
-212
-896
-251
+591
+336
+741
+375
 La longueur des filets controle le nombre de sorties par jour (3km = 1 sortie)
 10
 0.0
 1
 
 TEXTBOX
-931
-189
-1117
-267
+1046
+86
+1232
+164
 Une réserve intégrale de 8 mois par exemple signifie qu'il y a une interdiction de pêche pendant 8 mois, et sur les 4 restants les autres restrictions peuvent etre mises en place
 10
 0.0
 1
 
 TEXTBOX
-1134
-216
-1284
-255
+1252
+113
+1402
+152
 Les zones d'exclusion de pêche correspondent à celles de l'atelier de Mbane de novembre
 10
 0.0
 1
 
 SLIDER
-1081
-385
-1300
-418
+827
+378
+1046
+411
 PropBiomassPecheSenegalais
 PropBiomassPecheSenegalais
 0
@@ -572,25 +576,25 @@ PropBiomassPecheSenegalais
 HORIZONTAL
 
 SLIDER
-1105
-441
-1292
-474
+1077
+378
+1264
+411
 QtéMaxPoissonPirogue
 QtéMaxPoissonPirogue
 0
-100
-22.0
+1000
+30.0
 1
 1
-km
+kg
 HORIZONTAL
 
 SLIDER
-1101
-333
-1276
-366
+826
+266
+1001
+299
 ProportionSenegalais
 ProportionSenegalais
 0
@@ -602,10 +606,10 @@ ProportionSenegalais
 HORIZONTAL
 
 SLIDER
-1295
-384
-1508
-417
+827
+424
+1040
+457
 PropBiomassPecheEtrangers
 PropBiomassPecheEtrangers
 0
@@ -615,6 +619,76 @@ PropBiomassPecheEtrangers
 1
 %
 HORIZONTAL
+
+SLIDER
+590
+424
+786
+457
+LongueurFiletEtrangers
+LongueurFiletEtrangers
+0
+10000
+3000.0
+250
+1
+mètres
+HORIZONTAL
+
+TEXTBOX
+1047
+40
+1197
+60
+RESERVES
+16
+0.0
+1
+
+SLIDER
+1077
+425
+1310
+458
+QtéMaxPoissonPirogueEtrangers
+QtéMaxPoissonPirogueEtrangers
+0
+1000
+30.0
+1
+1
+kg
+HORIZONTAL
+
+TEXTBOX
+592
+486
+742
+506
+CAPITAL
+16
+0.0
+1
+
+TEXTBOX
+590
+318
+740
+338
+PECHE
+16
+0.0
+1
+
+TEXTBOX
+588
+203
+738
+223
+POPULATION
+16
+0.0
+1
 
 @#$#@#$#@
 ## TODO
