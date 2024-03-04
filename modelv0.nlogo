@@ -192,9 +192,9 @@ to go
     [if ReleveFilet < (LongueurFilet / 250)[
       if capture_totale < QtéMaxPoissonPirogue [
       ;while [capture_totale < QtéMaxPoissonPirogue][
+      move
       fishingSenegalais
       set capture_totale capture_totale + capture
-      move
       set capital_total capital_total + capital
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
         set ReleveFilet ReleveFilet + 1]
@@ -218,17 +218,18 @@ to go
     ; pour la mise en place de la réserve intégrale
     ; si reserve integrale = 4 mois, peche autorisee pendant 8 mois = 8*30 jours
     ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
+    move
 
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; maliens pechent plus donc 1.5 * filet
     if ReleveFilet < (LongueurFiletEtrangers / 250)[
         if capture_totale < QtéMaxPoissonPirogueEtrangers [
-      move
       fishingEtrangers
       set capture_totale capture_totale + capture
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
+      moveForward
       ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
     ]]]
     [
@@ -245,6 +246,10 @@ end
 
 to move
   move-to one-of lakeCells with[excluPeche = FALSE]
+end
+
+to moveForward
+  forward 1
 end
 
 to fishingSenegalais
