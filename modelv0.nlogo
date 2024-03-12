@@ -19,7 +19,10 @@ globals [
   sumBiomass
   ;EffortSenegalais
   ;EffortEtrangers
-  capital_lac
+  capital_total_1
+  capital_total_2
+  capital_moyen_1
+  capital_moyen_2
 ]
 
 patches-own[
@@ -38,10 +41,10 @@ boats-own[
  myVillage
   team
   ReleveFilet
-  capture_totale
   capture
-  capital_total
+  capture_totale
   capital
+  capital_total
 ]
 
 extensions [gis]
@@ -176,12 +179,16 @@ to go
       set pcolor scale-color blue biomass 0 (k / count lakeCells)
   ]]
 
+
   ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
   ; et ne pechent pas autant de poisson par jour
   ask boats with [team = 1] [
     set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
     set capture_totale 0 ; chaque jour capture initialement 0
-    ;set capital_total 0
+    set capital_total 0 - CoutMaintenance ; cout de sortie par jour
+    set capital_total_1 0
+    ;set capture 0
+    ;set capital 0
 
     ; 1 tick = 1 journée
 
@@ -194,30 +201,40 @@ to go
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; tant que les pêcheurs n'ont pas pêcher 1 filet de 3km = tant que relève filet inférieur à 12,
     ; ils continuent de pêcher
-    ; while [ReleveFilet < (LongueurFilet / 250)][
-      if ReleveFilet < (LongueurFilet / 250)[
-      if capture_totale < QtéMaxPoissonPirogue [
-      ;while [capture_totale < QtéMaxPoissonPirogue][
+     while [ReleveFilet < (LongueurFilet / 250)][
+      ;if ReleveFilet < (LongueurFilet / 250)[
       fishingSenegalais
-      set capture_totale capture_totale + capture
-      set capital_total capital_total + capital
+      set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogue)
+      ;if capture_totale < QtéMaxPoissonPirogue [
+      ;while [capture_totale < QtéMaxPoissonPirogue][
+
+      ;set capture_totale capture_totale + capture
+      ;set capital_total capital_total + capital
+      set capital_total capture_totale * PrixPoisson
+      ;print capture_totale
+      ;print capital_total
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
       set ReleveFilet ReleveFilet + 1
       moveForward
       ]
-    ]
+
     ][
       set capture 0
       set capture_totale capture_totale + capture
-      set capital_total capital_total + capital
+      set capital_total capital_total + capital - CoutMaintenance
     ]
-
-
+    set capital_total_1 capital_total_1 + capital_total
   ]
+
+
 
   ask boats with [team = 2] [
     set ReleveFilet 0
     set capture_totale 0
+    set capital_total 0 - CoutMaintenance
+    set capital_total_2 0
+    ;set capture 0
+    ;set capital 0
     ;set capital 0
 
     ; 1 tick = 1 journée
@@ -230,21 +247,24 @@ to go
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; maliens pechent plus donc 1.5 * filet
-      if ReleveFilet < (LongueurFiletEtrangers / 250)[
-        if capture_totale < QtéMaxPoissonPirogueEtrangers [
-      fishingEtrangers
-      set capture_totale capture_totale + capture
+      while [ReleveFilet < (LongueurFiletEtrangers / 250)][
+        fishingEtrangers
+        set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogueEtrangers)
+        set capital_total capture_totale * PrixPoisson
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
       moveForward
       ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
-    ]]]
+    ]]
     [
       set capture 0
       set capture_totale capture_totale + capture
       set capital_total capital_total + capital
     ]
+    set capital_total_2 capital_total_2 + capital_total
   ]
+
+
 
   if sumBiomass <= 0[stop]
   statSummary
@@ -300,7 +320,7 @@ to fishingSenegalais
   ]
 
   set capture PropCaptureSenegalais
-  set capital (PrixPoisson * capture) - CoutMaintenance
+  ;set capital (PrixPoisson * capture)
 
   ; captureSenegalais est en kg par filet donc on divisait par 12 pour l'avoir par patch
   ;ifelse _fishAvalableHere > (captureSenegalais / 12 ) [
@@ -330,8 +350,7 @@ to fishingEtrangers
   ]
 
   set capture PropCaptureEtrangers
-  set capital (PrixPoisson * capture) - CoutMaintenance
-
+  ;set capital (PrixPoisson * capture)
   ;ifelse _fishAvalableHere > (captureEtrangers / 12 ) [
   ;  ask patch-here [
   ;    set biomass (_fishAvalableHere - (captureEtrangers / 12 )) ; 3000m/250m = 12
@@ -358,7 +377,9 @@ to statSummary
   set sumBiomass sum [biomass] of lakeCells
   ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
   ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
-  set capital_lac mean[capital_total] of boats
+  set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
+  set capital_moyen_2 mean[capital_total] of boats with [team = 2]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -507,7 +528,7 @@ CoutMaintenance
 CoutMaintenance
 0
 10000
-2000.0
+3000.0
 100
 1
 CFA/Jour
@@ -529,11 +550,11 @@ Mètres
 HORIZONTAL
 
 PLOT
-824
+803
 39
-1024
-189
-Capital par pêcheur
+1083
+191
+Capital moyen d'un pêcheur Sénégalais par jour
 Jour
 Capital CFA
 0.0
@@ -544,13 +565,13 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot capital_lac"
+"default" 1.0 0 -16777216 true "" "plot capital_moyen_1"
 
 SLIDER
-1046
-155
-1219
-188
+1077
+319
+1250
+352
 ReserveIntegrale
 ReserveIntegrale
 0
@@ -562,10 +583,10 @@ mois
 HORIZONTAL
 
 SWITCH
-1250
-156
-1414
-189
+1281
+320
+1445
+353
 ZonesExclusionPeche
 ZonesExclusionPeche
 0
@@ -583,20 +604,20 @@ La longueur des filets controle le nombre de sorties par jour (3km = 1 sortie)
 1
 
 TEXTBOX
-1046
-86
-1232
-164
+1077
+250
+1263
+328
 Une réserve intégrale de 8 mois par exemple signifie qu'il y a une interdiction de pêche pendant 8 mois, et sur les 4 restants les autres restrictions peuvent etre mises en place
 10
 0.0
 1
 
 TEXTBOX
-1252
-113
-1402
-152
+1283
+277
+1433
+316
 Les zones d'exclusion de pêche correspondent à celles de l'atelier de Mbane de novembre
 10
 0.0
@@ -611,7 +632,7 @@ PropBiomassPecheSenegalais
 PropBiomassPecheSenegalais
 0
 100
-5.0
+1.0
 1
 1
 %
@@ -626,7 +647,7 @@ QtéMaxPoissonPirogue
 QtéMaxPoissonPirogue
 0
 1000
-30.0
+250.0
 1
 1
 kg
@@ -656,7 +677,7 @@ PropBiomassPecheEtrangers
 PropBiomassPecheEtrangers
 0
 100
-5.0
+2.0
 1
 1
 %
@@ -678,10 +699,10 @@ mètres
 HORIZONTAL
 
 TEXTBOX
-1047
-40
-1197
-60
+1078
+204
+1228
+224
 RESERVES
 16
 0.0
@@ -696,7 +717,7 @@ QtéMaxPoissonPirogueEtrangers
 QtéMaxPoissonPirogueEtrangers
 0
 1000
-30.0
+250.0
 1
 1
 kg
@@ -731,6 +752,24 @@ POPULATION
 16
 0.0
 1
+
+PLOT
+1099
+39
+1366
+189
+Capital moyen d'un pêcheur Etranger par jour
+Jour
+Capital CFA
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot capital_moyen_2"
 
 @#$#@#$#@
 ## TODO

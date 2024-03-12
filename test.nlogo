@@ -19,6 +19,7 @@ globals [
   ;EffortSenegalais
   ;EffortEtrangers
   capital_lac
+  i
 ]
 
 patches-own[
@@ -113,7 +114,7 @@ to setup
   ;show _nbTeam
 
   ;; check si l arrondi fait pas de la merde
-  let _nbBoatVillage ((306 / count villages with[lakeVillage = TRUE]))
+  let _nbBoatVillage ((50 / count villages with[lakeVillage = TRUE]))
   show _nbBoatVillage
 
   ask villages with[lakeVillage = TRUE][
@@ -173,6 +174,7 @@ to go
   ask boats with [team = 1] [
     set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
     set capture_totale 0 ; chaque jour capture initialement 0
+    set i 0
     ;set capital_total 0
 
     ; 1 tick = 1 journée
@@ -180,23 +182,32 @@ to go
     ; pour la mise en place d'une réserve intégrale
     ; si reserve integrale = 4 mois, on peut pêcher 8 mois = 8 * 30 jours
 
+    print i
 
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; tant que les pêcheurs n'ont pas pêcher 1 filet de 3km = tant que relève filet inférieur à 12,
     ; ils continuent de pêcher
-    ; while [ReleveFilet < (LongueurFilet / 250)][
-      if ReleveFilet < (3000 / 250)[
-      if capture_totale < 250 [
+     while [ReleveFilet < (1000 / 250)][
+      set i i + 1
+      print i
+      ;if ReleveFilet < (3000 / 250)[
+      ;if capture_totale < 250 [
       ;while [capture_totale < QtéMaxPoissonPirogue][
       fishingSenegalais
-      set capture_totale capture_totale + capture
-      set capital_total capital_total + capital
+      set capture_totale min (list (capture_totale + capture) 250)
+      ;ifelse capture_totale + capture <= 250 [
+      ;set capture_totale capture_totale + capture
+      print capture_totale
+      set capital_total capture_totale * 2000
+      print capital_total
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
       set ReleveFilet ReleveFilet + 1
       moveForward
       ]
-    ]
+    ;[
+     ; set capture_totale 250
+      ;]
     ]
 
   tick
@@ -250,7 +261,7 @@ to fishingSenegalais
   ]
 
   set capture PropCaptureSenegalais
-  set capital (2000 * capture) - 2000
+  ;set capital (2000 * capture)
 
   ; captureSenegalais est en kg par filet donc on divisait par 12 pour l'avoir par patch
   ;ifelse _fishAvalableHere > (captureSenegalais / 12 ) [
