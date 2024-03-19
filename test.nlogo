@@ -93,6 +93,7 @@ to setup
       set excluPeche FALSE
   ]
 
+  ask patches with[lake = FALSE][set biomass 0]
 
   set lakeCells patches with[pcolor = blue or pcolor = green]
   let _nblakeCells count lakeCells
@@ -148,13 +149,19 @@ gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
 to go
-  diffuse biomass diffuseBiomass
-  ask patches with[lake = FALSE][set biomass 0]
+  ;diffuse biomass diffuseBiomass
+
+  statSummary
+  print sumBiomass
 
   ask lakeCells [
+    diffuse_test
     grow-biomass
     ;set pcolor scale-color blue biomass 0 (k / count lakeCells) ; quand c'est blanc c'est qu'il y a beaucoup de poisson vs noir plus de poisson
   ]
+
+  statSummary
+  print sumBiomass
 
   ask lakeCells with[excluPeche = FALSE][
       set pcolor scale-color blue biomass 0 (k / count lakeCells)
@@ -209,6 +216,9 @@ to go
      ; set capture_totale 250
       ;]
     ]
+
+  statSummary
+  print sumBiomass
 
   tick
 end
@@ -286,7 +296,29 @@ to grow-biomass  ; patch procedure
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
   set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3 ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+end
 
+to diffuse_test ; patch procedure
+  let _previousBiomass biomass
+  let _neighbourTerre count neighbors with[lake = FALSE]
+  set biomass 0.5 * _previousBiomass + _neighbourTerre * ((1 / 8) * (1 / 2) * _previousBiomass)
+
+   ask neighbors[
+    ifelse lake = TRUE[
+      set biomass biomass + ((1 / 8) * (1 / 2) * _previousBiomass)
+    ][
+      set biomass 0
+    ]
+  ]
+end
+
+to statSummary
+  set sumBiomass sum [biomass] of lakeCells
+  ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
+  ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
+  ;set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
+  ;set capital_moyen_2 mean[capital_total] of boats with [team = 2]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW

@@ -6,6 +6,7 @@ globals [
   myEnvelope
   lac
   lakeCells
+  kLakeCell
   place
   exclusionPeche
   ;; global init variables
@@ -17,6 +18,7 @@ globals [
   InitHeading
   ;; global output
   sumBiomass
+  sumtest
   ;EffortSenegalais
   ;EffortEtrangers
   capital_total_1
@@ -55,7 +57,7 @@ to InitiVar
   ;set nbTeam2 40
   ;set capital 0
   set r 0.015
-  set k  (900000 * 1000) / 2144
+  set k ((900000 * 1000) / 2144) ; / 1000 pour les tonnes
   set diffuseBiomass 0.5
   set InitHeading random 360
 end
@@ -102,11 +104,15 @@ to setup
       set excluPeche TRUE
   ]]
 
-  set lakeCells patches with[pcolor = blue or pcolor = green]
-  let _nblakeCells count lakeCells
+  ;set lakeCells patches with[pcolor = blue or pcolor = green]
+  set lakeCells patches with[lake = TRUE]
+  let nblakeCells count lakeCells
+  set kLakeCell (k / nblakeCells)
   ask lakeCells [
-    set biomass (k / _nblakeCells)
+    set biomass kLakeCell
   ]
+
+  ask patches with[lake = FALSE][set biomass 0]
 
   ask villages [
     ifelse any? patches with[pcolor = blue or pcolor = green] in-radius 5 [
@@ -158,25 +164,40 @@ gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
 to go
-  diffuse biomass diffuseBiomass
-  ask patches with[lake = FALSE][set biomass 0]
+
+  ;print sumBiomass
+  ;print sumtest
+
+  ;diffuse biomass diffuseBiomass
+
+  ask lakeCells [
+    diffuse_test
+  ]
+
+  ;statSummary
+  ;print sumBiomass
+  ;print sumtest
 
   ask lakeCells [
     grow-biomass
     ;set pcolor scale-color blue biomass 0 (k / count lakeCells) ; quand c'est blanc c'est qu'il y a beaucoup de poisson vs noir plus de poisson
   ]
 
+  ;statSummary
+  ;print sumBiomass
+  ;print sumtest
+
   ifelse ZonesExclusionPeche [
     ask lakeCells with[excluPecheCells = TRUE] [set excluPeche TRUE]
     ask lakeCells with[excluPeche = TRUE][
-      set pcolor scale-color green biomass 0 (k / count lakeCells)
+      set pcolor scale-color green biomass 0 kLakeCell
   ]
   ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+      set pcolor scale-color blue biomass 0 kLakeCell
   ]][
     ask lakeCells with[excluPecheCells = TRUE] [set excluPeche FALSE]
     ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+      set pcolor scale-color blue biomass 0 kLakeCell
   ]]
 
 
@@ -264,10 +285,11 @@ to go
     set capital_total_2 capital_total_2 + capital_total
   ]
 
-
-
   if sumBiomass <= 0[stop]
   statSummary
+  print sumBiomass
+  ;print sumtest
+
   tick
 end
 
@@ -365,16 +387,34 @@ to fishingEtrangers
 
 end
 
+to diffuse_test ; patch procedure
+  let _previousBiomass biomass
+  let _neighbourTerre count neighbors with[lake = FALSE]
+  set biomass ((1 - diffuseBiomass) * _previousBiomass + _neighbourTerre * ((1 / 8) * diffuseBiomass * _previousBiomass))
+
+   ask neighbors[
+    ;ifelse lake = TRUE[
+    ;  set biomass biomass + ((1 / 8) * diffuseBiomass * _previousBiomass)
+    ;][
+     ; set biomass 0
+    ;]
+    if lake = TRUE[
+      let _previousBiomassNeighbour biomass
+      set biomass (_previousBiomassNeighbour + ((1 / 8) * diffuseBiomass * _previousBiomass))
+    ]
+  ]
+end
+
 to grow-biomass  ; patch procedure
   let _previousBiomass biomass
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
-  set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3 ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
-
+  set biomass _previousBiomass + (r * _previousBiomass * (1 - precision (_previousBiomass / kLakeCell) 3 )) ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
 end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
+  set sumtest sum [biomass] of patches with[lake = FALSE]
   ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
   ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
   set capital_moyen_1 mean[capital_total] of boats with [team = 1]
@@ -448,7 +488,7 @@ PLOT
 38
 790
 188
-Lake Biomass
+Lake Biomass Kg
 Jour
 NIL
 0.0
@@ -474,9 +514,9 @@ count boats
 
 BUTTON
 32
-115
+113
 95
-148
+146
 NIL
 go
 NIL
@@ -543,17 +583,17 @@ LongueurFilet
 LongueurFilet
 0
 10000
-3000.0
+0.0
 250
 1
 Mètres
 HORIZONTAL
 
 PLOT
-803
-39
-1083
-191
+806
+38
+1097
+190
 Capital moyen d'un pêcheur Sénégalais par jour
 Jour
 Capital CFA
@@ -589,7 +629,7 @@ SWITCH
 353
 ZonesExclusionPeche
 ZonesExclusionPeche
-0
+1
 1
 -1000
 
@@ -632,7 +672,7 @@ PropBiomassPecheSenegalais
 PropBiomassPecheSenegalais
 0
 100
-1.0
+0.0
 1
 1
 %
@@ -641,7 +681,7 @@ HORIZONTAL
 SLIDER
 1077
 378
-1264
+1267
 411
 QtéMaxPoissonPirogue
 QtéMaxPoissonPirogue
@@ -650,7 +690,7 @@ QtéMaxPoissonPirogue
 250.0
 1
 1
-kg
+Kg
 HORIZONTAL
 
 SLIDER
@@ -662,7 +702,7 @@ ProportionSenegalais
 ProportionSenegalais
 0
 100
-33.0
+12.0
 1
 1
 %
@@ -677,7 +717,7 @@ PropBiomassPecheEtrangers
 PropBiomassPecheEtrangers
 0
 100
-2.0
+0.0
 1
 1
 %
@@ -686,16 +726,16 @@ HORIZONTAL
 SLIDER
 590
 424
-786
+813
 457
 LongueurFiletEtrangers
 LongueurFiletEtrangers
 0
 10000
-3000.0
+0.0
 250
 1
-mètres
+Mètres
 HORIZONTAL
 
 TEXTBOX
@@ -711,7 +751,7 @@ RESERVES
 SLIDER
 1077
 425
-1310
+1318
 458
 QtéMaxPoissonPirogueEtrangers
 QtéMaxPoissonPirogueEtrangers
@@ -720,7 +760,7 @@ QtéMaxPoissonPirogueEtrangers
 250.0
 1
 1
-kg
+Kg
 HORIZONTAL
 
 TEXTBOX
@@ -754,10 +794,10 @@ POPULATION
 1
 
 PLOT
-1099
-39
-1366
-189
+1120
+40
+1406
+190
 Capital moyen d'un pêcheur Etranger par jour
 Jour
 Capital CFA
