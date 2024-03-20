@@ -6,7 +6,6 @@ globals [
   myEnvelope
   lac
   lakeCells
-  kLakeCell
   place
   exclusionPeche
   ;; global init variables
@@ -15,16 +14,12 @@ globals [
   r ; annual growth rate
   k ; carrying capacity in kg
   diffuseBiomass
-  InitHeading
   ;; global output
   sumBiomass
-  sumtest
   ;EffortSenegalais
   ;EffortEtrangers
-  capital_total_1
-  capital_total_2
-  capital_moyen_1
-  capital_moyen_2
+  capital_lac
+  i
 ]
 
 patches-own[
@@ -43,10 +38,10 @@ boats-own[
  myVillage
   team
   ReleveFilet
-  capture
   capture_totale
-  capital
+  capture
   capital_total
+  capital
 ]
 
 extensions [gis]
@@ -57,9 +52,8 @@ to InitiVar
   ;set nbTeam2 40
   ;set capital 0
   set r 0.015
-  set k ((900000 * 1000) / 2144) ; / 1000 pour les tonnes
+  set k  (900000 * 1000) / 2144
   set diffuseBiomass 0.5
-  set InitHeading random 360
 end
 
 to setup
@@ -82,6 +76,7 @@ to setup
     sprout-villages 1 [
       set shape "circle"
       set color yellow
+
     ]
   ]
 
@@ -98,21 +93,13 @@ to setup
       set excluPeche FALSE
   ]
 
-  if ZonesExclusionPeche [
-  ask patches with[excluPecheCells = TRUE][
-      set pcolor green
-      set excluPeche TRUE
-  ]]
-
-  ;set lakeCells patches with[pcolor = blue or pcolor = green]
-  set lakeCells patches with[lake = TRUE]
-  let nblakeCells count lakeCells
-  set kLakeCell (k / nblakeCells)
-  ask lakeCells [
-    set biomass kLakeCell
-  ]
-
   ask patches with[lake = FALSE][set biomass 0]
+
+  set lakeCells patches with[pcolor = blue or pcolor = green]
+  let _nblakeCells count lakeCells
+  ask lakeCells [
+    set biomass (k / _nblakeCells)
+  ]
 
   ask villages [
     ifelse any? patches with[pcolor = blue or pcolor = green] in-radius 5 [
@@ -128,34 +115,32 @@ to setup
   ;show _nbTeam
 
   ;; check si l arrondi fait pas de la merde
-  let _nbBoatVillage ((nbBoats / count villages with[lakeVillage = TRUE]))
-  ;show _nbBoatVillage
+  let _nbBoatVillage ((50 / count villages with[lakeVillage = TRUE]))
+  show _nbBoatVillage
 
   ask villages with[lakeVillage = TRUE][
     let _nearestPatch min-one-of (patches with [pcolor = blue or pcolor = green])[distance myself]
     move-to _nearestPatch ;; on déplace les villages près de l'eau
-    ;set color one-of (list ((random 14) * 10 + 6 ) ((random 14) * 10 + 3 ))
+    set color one-of (list ((random 14) * 10 + 6 ) ((random 14) * 10 + 3 ))
     ;set fisherTeam2 nbTeam2
-    ;let _myColor [color] of self
+    let _myColor [color] of self
     ask patch-here[
-      sprout-boats precision(_nbBoatVillage * (ProportionSenegalais / 100)) 0  [   ;;Team1 : Sénégalais
-        set color red
-        set shape "fisherboat"
+      sprout-boats precision(_nbBoatVillage * (33 / 100)) 0  [   ;;Team1 : Sénégalais
+        set color _myColor
+
         set team 1
-        set heading InitHeading
       ]
       ;sprout-boats (_nbTeam * 2)  [   ;;Team2 : étrangers
-      sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
-        set color green
-        set shape "fisherboat"
+      sprout-boats precision((_nbBoatVillage * (1 - (33 / 100)))) 0 [
+        set color _myColor
+
         set team 2
-        set heading InitHeading
       ]
     ]
 
   ]
 
-  statSummary
+
 
 end
 
@@ -164,131 +149,76 @@ gis:set-world-envelope (gis:envelope-of myEnvelope)
 end
 
 to go
-
-  ;print sumBiomass
-  ;print sumtest
-
   ;diffuse biomass diffuseBiomass
+
+  statSummary
+  print sumBiomass
 
   ask lakeCells [
     diffuse_test
-  ]
-
-  ;statSummary
-  ;print sumBiomass
-  ;print sumtest
-
-  ask lakeCells [
     grow-biomass
     ;set pcolor scale-color blue biomass 0 (k / count lakeCells) ; quand c'est blanc c'est qu'il y a beaucoup de poisson vs noir plus de poisson
   ]
 
-  ;statSummary
-  ;print sumBiomass
-  ;print sumtest
+  statSummary
+  print sumBiomass
 
-  ifelse ZonesExclusionPeche [
-    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche TRUE]
-    ask lakeCells with[excluPeche = TRUE][
-      set pcolor scale-color green biomass 0 kLakeCell
-  ]
   ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 kLakeCell
-  ]][
+      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+  ]
     ask lakeCells with[excluPecheCells = TRUE] [set excluPeche FALSE]
     ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 kLakeCell
-  ]]
-
+      set pcolor scale-color blue biomass 0 (k / count lakeCells)
+  ]
 
   ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
   ; et ne pechent pas autant de poisson par jour
+  ask turtles [
+    set heading random 360
+  let patch_ahead1 patch-at-heading-and-distance heading 1
+    if is_fishable? patch_ahead1 = TRUE[ forward 1]]
+
   ask boats with [team = 1] [
     set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
     set capture_totale 0 ; chaque jour capture initialement 0
-    set capital_total 0 - CoutMaintenance ; cout de sortie par jour
-    set capital_total_1 0
-    ;set capture 0
-    ;set capital 0
+    set i 0
+    ;set capital_total 0
 
     ; 1 tick = 1 journée
 
     ; pour la mise en place d'une réserve intégrale
     ; si reserve integrale = 4 mois, on peut pêcher 8 mois = 8 * 30 jours
-    ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
-      move
+
+    print i
 
     ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
     ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
     ; tant que les pêcheurs n'ont pas pêcher 1 filet de 3km = tant que relève filet inférieur à 12,
     ; ils continuent de pêcher
-     while [ReleveFilet < (LongueurFilet / 250)][
-      ;if ReleveFilet < (LongueurFilet / 250)[
-      fishingSenegalais
-      set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogue)
-      ;if capture_totale < QtéMaxPoissonPirogue [
+     while [ReleveFilet < (1000 / 250)][
+      set i i + 1
+      print i
+      ;if ReleveFilet < (3000 / 250)[
+      ;if capture_totale < 250 [
       ;while [capture_totale < QtéMaxPoissonPirogue][
-
+      fishingSenegalais
+      set capture_totale min (list (capture_totale + capture) 250)
+      ;ifelse capture_totale + capture <= 250 [
       ;set capture_totale capture_totale + capture
-      ;set capital_total capital_total + capital
-      set capital_total capture_totale * PrixPoisson
-      ;print capture_totale
-      ;print capital_total
+      print capture_totale
+      set capital_total capture_totale * 2000
+      print capital_total
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
       set ReleveFilet ReleveFilet + 1
       moveForward
       ]
-
-    ][
-      set capture 0
-      set capture_totale capture_totale + capture
-      set capital_total capital_total + capital - CoutMaintenance
+    ;[
+     ; set capture_totale 250
+      ;]
     ]
-    set capital_total_1 capital_total_1 + capital_total
-  ]
 
-
-
-  ask boats with [team = 2] [
-    set ReleveFilet 0
-    set capture_totale 0
-    set capital_total 0 - CoutMaintenance
-    set capital_total_2 0
-    ;set capture 0
-    ;set capital 0
-    ;set capital 0
-
-    ; 1 tick = 1 journée
-
-    ; pour la mise en place de la réserve intégrale
-    ; si reserve integrale = 4 mois, peche autorisee pendant 8 mois = 8*30 jours
-    ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
-    move
-
-    ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
-    ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-    ; maliens pechent plus donc 1.5 * filet
-      while [ReleveFilet < (LongueurFiletEtrangers / 250)][
-        fishingEtrangers
-        set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogueEtrangers)
-        set capital_total capture_totale * PrixPoisson
-      ;let _fishAvalableHere [biomass] of patch-here
-      set ReleveFilet ReleveFilet + 1
-      moveForward
-      ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
-    ]]
-    [
-      set capture 0
-      set capture_totale capture_totale + capture
-      set capital_total capital_total + capital
-    ]
-    set capital_total_2 capital_total_2 + capital_total
-  ]
-
-  if sumBiomass <= 0[stop]
   statSummary
   print sumBiomass
-  ;print sumtest
 
   tick
 end
@@ -299,10 +229,9 @@ end
 
 ;; les pecheurs avancent dans une même direction : modelise lorsqu'ils relevent leurs filets
 to moveForward
-  ;pour dessiner les pecheurs
-  ;pen-down
+  pen-down
 
-  set heading heading + (random 45 - random 45 + 1)
+  set heading random 90
 
   let patch_ahead patch-at-heading-and-distance heading 1
   ;show is_fishable? patch_ahead
@@ -314,9 +243,9 @@ to moveForward
   ][
     forward 1]
 
-  ;show is_fishable? patch_ahead
+  show is_fishable? patch_ahead
 
-  ;pen-up
+  pen-up
 end
 
 to-report is_fishable? [patch_ahead]
@@ -335,14 +264,14 @@ to fishingSenegalais
   let _fishAvalableHere [biomass] of patch-here
 
   ; Proportion de poisson capturée par le filet sur le patch
-  let PropCaptureSenegalais (PropBiomassPecheSenegalais / 100) * [biomass] of patch-here
+  let PropCaptureSenegalais (5 / 100) * [biomass] of patch-here
 
   ask patch-here[
     set biomass (_fishAvalableHere - PropCaptureSenegalais) ; biomass en kg ??????
   ]
 
   set capture PropCaptureSenegalais
-  ;set capital (PrixPoisson * capture)
+  ;set capital (2000 * capture)
 
   ; captureSenegalais est en kg par filet donc on divisait par 12 pour l'avoir par patch
   ;ifelse _fishAvalableHere > (captureSenegalais / 12 ) [
@@ -361,75 +290,45 @@ to fishingSenegalais
 
 end
 
-to fishingEtrangers
-  let _fishAvalableHere [biomass] of patch-here
-
-  ; Proportion de poisson capturée par le filet sur le patch
-  let PropCaptureEtrangers (PropBiomassPecheEtrangers / 100) * [biomass] of patch-here
-
-  ask patch-here[
-    set biomass (_fishAvalableHere - PropCaptureEtrangers) ; biomass en kg ??????
-  ]
-
-  set capture PropCaptureEtrangers
-  ;set capital (PrixPoisson * capture)
-  ;ifelse _fishAvalableHere > (captureEtrangers / 12 ) [
-  ;  ask patch-here [
-  ;    set biomass (_fishAvalableHere - (captureEtrangers / 12 )) ; 3000m/250m = 12
-  ;]
-  ;set capture (captureEtrangers / 12)
-  ;]
-  ;[ ask patch-here [
-  ;  set biomass max list (_fishAvalableHere - (captureEtrangers / 12 )) 0
-  ;  ]
-  ;  set capture max list(_fishAvalableHere) 0
-  ;]
-
-end
-
-to diffuse_test ; patch procedure
-  let _previousBiomass biomass
-  let _neighbourTerre count neighbors with[lake = FALSE]
-  set biomass ((1 - diffuseBiomass) * _previousBiomass + _neighbourTerre * ((1 / 8) * diffuseBiomass * _previousBiomass))
-
-   ask neighbors[
-    ;ifelse lake = TRUE[
-    ;  set biomass biomass + ((1 / 8) * diffuseBiomass * _previousBiomass)
-    ;][
-     ; set biomass 0
-    ;]
-    if lake = TRUE[
-      let _previousBiomassNeighbour biomass
-      set biomass (_previousBiomassNeighbour + ((1 / 8) * diffuseBiomass * _previousBiomass))
-    ]
-  ]
-end
 
 to grow-biomass  ; patch procedure
   let _previousBiomass biomass
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
-  set biomass _previousBiomass + (r * _previousBiomass * (1 - precision (_previousBiomass / kLakeCell) 3 )) ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+  set biomass _previousBiomass + precision (r * _previousBiomass * (1 - (_previousBiomass / k))) 3 ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+end
+
+to diffuse_test ; patch procedure
+  let _previousBiomass biomass
+  let _neighbourTerre count neighbors with[lake = FALSE]
+  set biomass 0.5 * _previousBiomass + _neighbourTerre * ((1 / 8) * (1 / 2) * _previousBiomass)
+
+   ask neighbors[
+    ifelse lake = TRUE[
+      set biomass biomass + ((1 / 8) * (1 / 2) * _previousBiomass)
+    ][
+      set biomass 0
+    ]
+  ]
 end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
-  set sumtest sum [biomass] of patches with[lake = FALSE]
   ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
   ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
-  set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  ;set capital_moyen_1 mean[capital_total] of boats with [team = 1]
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
-  set capital_moyen_2 mean[capital_total] of boats with [team = 2]
+  ;set capital_moyen_2 mean[capital_total] of boats with [team = 2]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-119
-33
-553
-468
+210
+10
+647
+448
 -1
 -1
-3.025
+13.0
 1
 10
 1
@@ -439,10 +338,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--70
-70
--70
-70
+-16
+16
+-16
+16
 0
 0
 1
@@ -450,10 +349,10 @@ ticks
 30.0
 
 BUTTON
-31
-38
-98
-71
+64
+60
+127
+93
 NIL
 setup
 NIL
@@ -467,56 +366,10 @@ NIL
 1
 
 BUTTON
-32
-78
-98
-111
-NIL
-go
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-PLOT
-590
-38
-790
-188
-Lake Biomass Kg
-Jour
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot sumBiomass"
-
-MONITOR
-590
-221
-675
-266
-NIL
-count boats
-17
-1
-11
-
-BUTTON
-32
-113
-95
-146
+75
+131
+138
+164
 NIL
 go
 NIL
@@ -528,296 +381,8 @@ NIL
 NIL
 NIL
 1
-
-SLIDER
-590
-263
-762
-296
-nbBoats
-nbBoats
-0
-500
-306.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-591
-508
-763
-541
-PrixPoisson
-PrixPoisson
-0
-10000
-1900.0
-100
-1
-CFA/kg
-HORIZONTAL
-
-SLIDER
-590
-552
-799
-585
-CoutMaintenance
-CoutMaintenance
-0
-10000
-3000.0
-100
-1
-CFA/Jour
-HORIZONTAL
-
-SLIDER
-590
-378
-762
-411
-LongueurFilet
-LongueurFilet
-0
-10000
-0.0
-250
-1
-Mètres
-HORIZONTAL
-
-PLOT
-806
-38
-1097
-190
-Capital moyen d'un pêcheur Sénégalais par jour
-Jour
-Capital CFA
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot capital_moyen_1"
-
-SLIDER
-1077
-319
-1250
-352
-ReserveIntegrale
-ReserveIntegrale
-0
-12
-0.0
-1
-1
-mois
-HORIZONTAL
-
-SWITCH
-1281
-320
-1445
-353
-ZonesExclusionPeche
-ZonesExclusionPeche
-1
-1
--1000
-
-TEXTBOX
-591
-336
-741
-375
-La longueur des filets controle le nombre de sorties par jour (3km = 1 sortie)
-10
-0.0
-1
-
-TEXTBOX
-1077
-250
-1263
-328
-Une réserve intégrale de 8 mois par exemple signifie qu'il y a une interdiction de pêche pendant 8 mois, et sur les 4 restants les autres restrictions peuvent etre mises en place
-10
-0.0
-1
-
-TEXTBOX
-1283
-277
-1433
-316
-Les zones d'exclusion de pêche correspondent à celles de l'atelier de Mbane de novembre
-10
-0.0
-1
-
-SLIDER
-827
-378
-1046
-411
-PropBiomassPecheSenegalais
-PropBiomassPecheSenegalais
-0
-100
-0.0
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-1077
-378
-1267
-411
-QtéMaxPoissonPirogue
-QtéMaxPoissonPirogue
-0
-1000
-250.0
-1
-1
-Kg
-HORIZONTAL
-
-SLIDER
-826
-266
-1001
-299
-ProportionSenegalais
-ProportionSenegalais
-0
-100
-12.0
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-827
-424
-1040
-457
-PropBiomassPecheEtrangers
-PropBiomassPecheEtrangers
-0
-100
-0.0
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-590
-424
-813
-457
-LongueurFiletEtrangers
-LongueurFiletEtrangers
-0
-10000
-0.0
-250
-1
-Mètres
-HORIZONTAL
-
-TEXTBOX
-1078
-204
-1228
-224
-RESERVES
-16
-0.0
-1
-
-SLIDER
-1077
-425
-1318
-458
-QtéMaxPoissonPirogueEtrangers
-QtéMaxPoissonPirogueEtrangers
-0
-1000
-250.0
-1
-1
-Kg
-HORIZONTAL
-
-TEXTBOX
-592
-486
-742
-506
-CAPITAL
-16
-0.0
-1
-
-TEXTBOX
-590
-318
-740
-338
-PECHE
-16
-0.0
-1
-
-TEXTBOX
-588
-203
-738
-223
-POPULATION
-16
-0.0
-1
-
-PLOT
-1120
-40
-1406
-190
-Capital moyen d'un pêcheur Etranger par jour
-Jour
-Capital CFA
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot capital_moyen_2"
 
 @#$#@#$#@
-## TODO
-
-- les pirogues se déplace au hazard, est-ce qu'on garde un truc comme ça ?
-- Pas de réserve, a ajouter
-- typha
-
 ## WHAT IS IT?
 
 (a general understanding of what the model is trying to show or explain)
@@ -970,13 +535,6 @@ Polygon -1 true false 135 195 119 235 95 218 76 210 46 204 60 165
 Polygon -1 true false 75 45 83 77 71 103 86 114 166 78 135 60
 Polygon -7500403 true true 30 136 151 77 226 81 280 119 292 146 292 160 287 170 270 195 195 210 151 212 30 166
 Circle -16777216 true false 215 106 30
-
-fisherboat
-true
-0
-Polygon -7500403 true true 60 120 75 135 225 135 240 120 240 135 225 150 75 150 60 135
-Line -7500403 true 225 120 255 165
-Circle -7500403 true true 240 150 30
 
 flag
 false
