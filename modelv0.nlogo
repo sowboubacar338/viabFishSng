@@ -5,26 +5,23 @@ globals [
   ;; GIS Data
   myEnvelope
   lac
-  lakeCells
-  kLakeCell
   place
   exclusionPeche
+  lakeCells
   ;; global init variables
-  ;nbTeam1
-  ;nbTeam2
   r ; annual growth rate
   k ; carrying capacity in kg
-  diffuseBiomass
+  kLakeCell ; same than k per patch
+  diffuseBiomass ; %
   InitHeading
   ;; global output
   sumBiomass
-  sumtest
-  ;EffortSenegalais
-  ;EffortEtrangers
   capital_total_1
   capital_total_2
   capital_moyen_1
   capital_moyen_2
+  t1
+  t2
 ]
 
 patches-own[
@@ -36,11 +33,11 @@ patches-own[
 
 villages-own[
   lakeVillage ;; bol
-  myFisherboat
+  ;myFisherboat
 ]
 
 boats-own[
- myVillage
+ ;myVillage
   team
   ReleveFilet
   capture
@@ -129,7 +126,7 @@ to setup
 
   ;; check si l arrondi fait pas de la merde
   let _nbBoatVillage ((nbBoats / count villages with[lakeVillage = TRUE]))
-  ;show _nbBoatVillage
+  show _nbBoatVillage
 
   ask villages with[lakeVillage = TRUE][
     let _nearestPatch min-one-of (patches with [pcolor = blue or pcolor = green])[distance myself]
@@ -165,6 +162,19 @@ end
 
 to go
 
+    ifelse ZonesExclusionPeche [
+    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche TRUE]
+    ask lakeCells with[excluPeche = TRUE][
+      set pcolor scale-color green biomass 0 kLakeCell
+  ]
+  ask lakeCells with[excluPeche = FALSE][
+      set pcolor scale-color blue biomass 0 kLakeCell
+  ]][
+    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche FALSE]
+    ask lakeCells with[excluPeche = FALSE][
+      set pcolor scale-color blue biomass 0 kLakeCell
+  ]]
+
   ;print sumBiomass
   ;print sumtest
 
@@ -187,24 +197,13 @@ to go
   ;print sumBiomass
   ;print sumtest
 
-  ifelse ZonesExclusionPeche [
-    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche TRUE]
-    ask lakeCells with[excluPeche = TRUE][
-      set pcolor scale-color green biomass 0 kLakeCell
-  ]
-  ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 kLakeCell
-  ]][
-    ask lakeCells with[excluPecheCells = TRUE] [set excluPeche FALSE]
-    ask lakeCells with[excluPeche = FALSE][
-      set pcolor scale-color blue biomass 0 kLakeCell
-  ]]
-
 
   ; hypothese que mbanais et maliens ne posent pas leurs filets aux mêmes endroits
   ; et ne pechent pas autant de poisson par jour
-  ask boats with [team = 1] [
-    set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
+  ask boats [
+  ifelse team = 1
+    [
+      set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
     set capture_totale 0 ; chaque jour capture initialement 0
     set capital_total 0 - CoutMaintenance ; cout de sortie par jour
     set capital_total_1 0
@@ -245,12 +244,11 @@ to go
       set capital_total capital_total + capital - CoutMaintenance
     ]
     set capital_total_1 capital_total_1 + capital_total
-  ]
+    ]
 
 
-
-  ask boats with [team = 2] [
-    set ReleveFilet 0
+    [
+      set ReleveFilet 0
     set capture_totale 0
     set capital_total 0 - CoutMaintenance
     set capital_total_2 0
@@ -283,7 +281,10 @@ to go
       set capital_total capital_total + capital
     ]
     set capital_total_2 capital_total_2 + capital_total
+    ]
+
   ]
+
 
   if sumBiomass <= 0[stop]
   statSummary
@@ -414,7 +415,7 @@ end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
-  set sumtest sum [biomass] of patches with[lake = FALSE]
+  ;set sumtest sum [biomass] of patches with[lake = FALSE]
   ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
   ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
   set capital_moyen_1 mean[capital_total] of boats with [team = 1]
