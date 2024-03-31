@@ -169,7 +169,7 @@ to go
       set pcolor scale-color blue biomass 0 kLakeCell
   ]]
 
-  print sumBiomass
+  ;print sumBiomass
   ;print sumtest
 
   ;diffuse biomass diffuseBiomass
@@ -179,7 +179,7 @@ to go
   ]
 
   ;statSummary
-  print sumBiomass
+  ;print sumBiomass
   ;print sumtest
 
   ask lakeCells [
@@ -188,7 +188,7 @@ to go
   ]
 
   ;statSummary
-  print sumBiomass
+  ;print sumBiomass
   ;print sumtest
 
 
@@ -224,7 +224,7 @@ to go
 
       ;set capture_totale capture_totale + capture
       ;set capital_total capital_total + capital
-      set capital_total capture_totale * PrixPoisson
+      set capital_total capital_total + capture_totale * PrixPoisson
       ;print capture_totale
       ;print capital_total
       ; 0.8 kg / biomass du patch pour avoir une capture en kg sur 250m (10 kg sur 3000 m donc 0.8 kg sur 250m)
@@ -235,7 +235,7 @@ to go
     ][
       set capture 0
       set capture_totale capture_totale + capture
-      set capital_total capital_total + capital - CoutMaintenance
+      set capital_total capital_total + capital
     ]
     set capital_total_1 capital_total_1 + capital_total
     ]
@@ -263,7 +263,7 @@ to go
       while [ReleveFilet < (LongueurFiletEtrangers / 250)][
         fishingEtrangers
         set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogueEtrangers)
-        set capital_total capture_totale * PrixPoisson
+        set capital_total capital_total + capture_totale * PrixPoisson
       ;let _fishAvalableHere [biomass] of patch-here
       set ReleveFilet ReleveFilet + 1
       moveForward
@@ -404,11 +404,11 @@ end
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
   ;set sumtest sum [biomass] of patches with[lake = FALSE]
-  ;set EffortSenegalais captureSenegalais * count boats with [team = 1]
-  ;set EffortEtrangers captureEtrangers * count boats with [team = 2]
   set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  print capital_moyen_1
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
+  print capital_moyen_2
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -572,7 +572,7 @@ LongueurFilet
 LongueurFilet
 0
 10000
-0.0
+3000.0
 250
 1
 Mètres
@@ -618,7 +618,7 @@ SWITCH
 353
 ZonesExclusionPeche
 ZonesExclusionPeche
-1
+0
 1
 -1000
 
@@ -661,8 +661,8 @@ PropBiomassPecheSenegalais
 PropBiomassPecheSenegalais
 0
 100
-0.0
-1
+0.5
+0.5
 1
 %
 HORIZONTAL
@@ -683,10 +683,10 @@ Kg
 HORIZONTAL
 
 SLIDER
-826
-266
-1001
-299
+819
+265
+994
+298
 ProportionSenegalais
 ProportionSenegalais
 0
@@ -706,8 +706,8 @@ PropBiomassPecheEtrangers
 PropBiomassPecheEtrangers
 0
 100
-0.0
-1
+0.5
+0.5
 1
 %
 HORIZONTAL
@@ -721,7 +721,7 @@ LongueurFiletEtrangers
 LongueurFiletEtrangers
 0
 10000
-0.0
+3000.0
 250
 1
 Mètres
@@ -799,6 +799,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot capital_moyen_2"
+
+SLIDER
+827
+322
+999
+355
+SortieSemaine
+SortieSemaine
+0
+7
+3.0
+1
+1
+Jours
+HORIZONTAL
 
 @#$#@#$#@
 ## TODO
