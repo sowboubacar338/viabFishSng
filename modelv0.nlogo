@@ -282,7 +282,7 @@ to go
 
   if sumBiomass <= 0[stop]
   statSummary
-  print sumBiomass
+  ;print sumBiomass
   ;print sumtest
 
   tick
@@ -405,10 +405,10 @@ to statSummary
   set sumBiomass sum [biomass] of lakeCells
   ;set sumtest sum [biomass] of patches with[lake = FALSE]
   set capital_moyen_1 mean[capital_total] of boats with [team = 1]
-  print capital_moyen_1
+  ;print capital_moyen_1
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
-  print capital_moyen_2
+  ;print capital_moyen_2
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
