@@ -527,7 +527,7 @@ nbBoats
 nbBoats
 0
 500
-306.0
+490.0
 1
 1
 NIL
@@ -572,7 +572,7 @@ LongueurFilet
 LongueurFilet
 0
 10000
-3000.0
+2000.0
 250
 1
 Mètres
@@ -597,15 +597,15 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot capital_moyen_1"
 
 SLIDER
-1077
-319
-1250
-352
+1074
+339
+1247
+372
 ReserveIntegrale
 ReserveIntegrale
 0
 12
-0.0
+3.0
 1
 1
 mois
@@ -618,7 +618,7 @@ SWITCH
 353
 ZonesExclusionPeche
 ZonesExclusionPeche
-0
+1
 1
 -1000
 
@@ -636,7 +636,7 @@ TEXTBOX
 1077
 250
 1263
-328
+333
 Une réserve intégrale de 8 mois par exemple signifie qu'il y a une interdiction de pêche pendant 8 mois, et sur les 4 restants les autres restrictions peuvent etre mises en place
 10
 0.0
@@ -661,7 +661,7 @@ PropBiomassPecheSenegalais
 PropBiomassPecheSenegalais
 0
 100
-0.5
+1.0
 0.5
 1
 %
@@ -691,7 +691,7 @@ ProportionSenegalais
 ProportionSenegalais
 0
 100
-12.0
+50.0
 1
 1
 %
@@ -706,7 +706,7 @@ PropBiomassPecheEtrangers
 PropBiomassPecheEtrangers
 0
 100
-0.5
+3.0
 0.5
 1
 %
@@ -809,7 +809,7 @@ SortieSemaine
 SortieSemaine
 0
 7
-3.0
+6.0
 1
 1
 Jours
@@ -1174,6 +1174,46 @@ NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="3650"/>
+    <metric>sumBiomass</metric>
+    <metric>capital_moyen_1</metric>
+    <metric>capital_moyen_2</metric>
+    <steppedValueSet variable="LongueurFilet" first="2000" step="1000" last="3000"/>
+    <steppedValueSet variable="LongueurFiletEtrangers" first="2000" step="1000" last="3000"/>
+    <steppedValueSet variable="SortieSemaine" first="2" step="1" last="7"/>
+    <enumeratedValueSet variable="ZonesExclusionPeche">
+      <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="PrixPoisson" first="1000" step="500" last="3000"/>
+    <enumeratedValueSet variable="nbBoats">
+      <value value="490"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="ReserveIntegrale" first="0" step="1" last="6"/>
+    <enumeratedValueSet variable="CoutMaintenance">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ProportionSenegalais">
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
