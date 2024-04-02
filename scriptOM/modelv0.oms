@@ -1,0 +1,69 @@
+val mySeed = Val[Int]
+val nbBoats = Val[Double]
+val LongueurFilet = Val[Double]
+val LongueurFiletEtrangers = Val[Double]
+val SortieSemaine = Val[Double]
+val ZonesExclusionPeche = Val[Boolean]
+val PropBiomassPecheSenegalais = Val[Double]
+val PropBiomassPecheEtrangers = Val[Double]
+val QteMaxPoissonPirogueEtrangers = Val[Double]
+val QteMaxPoissonPirogue = Val[Double]
+val ReserveIntegrale = Val[Double]
+val PrixPoisson = Val[Double]
+val CoutMaintenance = Val[Double]
+val ProportionSenegalais = Val[Double]
+
+val om_sumBiomass = Val[Double]
+val om_capital_moyen_1 = Val[Double]
+val om_capital_moyen_2 = Val[Double]
+val om_capitalTotal = Val[Double]
+
+
+val launch = List("setup", "while [ticks <= 3650] [go] ;; You should set your running/stopping criteria here instead")
+            
+val model = NetLogo6Task(
+  workDirectory / "modelv0.nlogo",
+  launch,
+  embedWorkspace = true,
+  seed = mySeed
+) set (
+  inputs += (mySeed),
+  outputs += (mySeed),
+  inputs += nbBoats mapped "nbBoats",
+  inputs += LongueurFilet mapped "LongueurFilet",
+  inputs += LongueurFiletEtrangers mapped "LongueurFiletEtrangers",
+  inputs += SortieSemaine mapped "SortieSemaine",
+  inputs += ZonesExclusionPeche mapped "ZonesExclusionPeche",
+  inputs += PropBiomassPecheSenegalais mapped "PropBiomassPecheSenegalais",
+  inputs += PropBiomassPecheEtrangers mapped "PropBiomassPecheEtrangers",
+  inputs += QteMaxPoissonPirogueEtrangers mapped "QtéMaxPoissonPirogueEtrangers",
+  inputs += QteMaxPoissonPirogue mapped "QtéMaxPoissonPirogue",
+  inputs += ReserveIntegrale mapped "ReserveIntegrale",
+  inputs += PrixPoisson mapped "PrixPoisson",
+  inputs += CoutMaintenance mapped "CoutMaintenance",
+  inputs += ProportionSenegalais mapped "ProportionSenegalais",
+  
+  outputs += om_sumBiomass mapped "sumBiomass",
+  outputs += om_capital_moyen_1 mapped "capital_moyen_1",
+  outputs += om_capital_moyen_2 mapped "capital_moyen_2",
+  outputs += om_capitalTotal mapped "capitalTotal",
+
+  // Default values. Can be removed if OpenMOLE Vals are set by values coming from the workflow
+  //mySeed := 0,
+  //nbBoats := 200.0,
+  //LongueurFilet := 3000,
+  //LongueurFiletEtrangers := 3000.0,
+  //SortieSemaine := 6,
+  PropBiomassPecheSenegalais := 1.0,
+  PropBiomassPecheEtrangers := 1.0,
+  QteMaxPoissonPirogueEtrangers:= 250.0,
+  QteMaxPoissonPirogue := 250.0,
+  //ReserveIntegrale := 0.0,
+  //PrixPoisson := 1900.0,
+  //CoutMaintenance := 3000,
+  ProportionSenegalais := 50.0,
+  ZonesExclusionPeche := true
+ 
+  )
+
+model hook display
