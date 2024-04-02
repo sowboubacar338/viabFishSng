@@ -20,6 +20,7 @@ globals [
   capital_total_2 ; somme des capitaux des pêcheurs étrangers
   capital_moyen_1 ; capital moyen d'un pêcheur Sénégalais
   capital_moyen_2 ; capital moyen d'un pêcheur étranger
+  capitalTotal
   t1
   t2
 ]
@@ -409,6 +410,7 @@ to statSummary
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
   ;print capital_moyen_2
+  set capitalTotal capital_moyen_1 + capital_moyen_2
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
