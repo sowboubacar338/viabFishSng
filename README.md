@@ -1,12 +1,21 @@
 # viabFishSng
+Le travail sur se modèle se fait dans le cadre du [projet Santés et Territoires](https://www.santes-territoires.org/). 
 
 - test stratégie de pêches
-	- nombre de sorties :white_check_mark:
-	- zone d'exclusion de pêche (temporaire ou intégrale) :white_check_mark:
-	- longueur des filets :white_check_mark:
+	- nombre de sorties :white_check_mark:(M0)
+	- zone d'exclusion de pêche (temporaire ou intégrale) :white_check_mark:(M0)
+	- longueur des filets :white_check_mark:(M0)
     - choix des zones de pêches 
 	- communication pour les zones de pêches
-- pipe d’exploration de modèle avec OpenMole :white_check_mark:
+	- expliciter le lien entre la distance de sortie et le cout de la sortie (entretien des pirogues)
+	- travailler sur les stratégies spatiales des pêcheurs
+- pipe d’exploration de modèle avec OpenMole 
+    - M0
+        - Analyse de sensibilité :white_check_mark:
+        - PSE :white_check_mark:
+     - M1
+         - Analyse de sensibilité 
+         - PSE
 - famille de modèles sur github ([cottineau 2014](https://ecm.univ-paris1.fr/nuxeo/site/esupversions/cab3b3d5-3c9d-48f6-887c-8e8b8df7a7d2), et [Grimm et al. 2014](https://www2.econ.iastate.edu/tesfatsi/TRACE.ModFramework.GrimmEtAl2014.pdf) )
 
 # Modèle M0
