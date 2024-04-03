@@ -123,4 +123,37 @@ Par exemple, pour `nbBoats`, les indices sont d'environ 0.686 et 0.347 pour les 
 | SortieSemaine | 0.0007 |
 | CoutMaintenance | 0.00024 |
 ### Senarisation 
+On a pas explorer l'impacte des bateaux `nbBoat` sur la biomasse et le captiales
 
+#### Réserves
+##### Réserve intégrale
+
+ Biomasse dans le temps (Première figure) :
+
+* **Absence de réserve (0 mois)** : Il y a un déclin initial rapide de la biomasse. La biomasse subit une exploitation intense qui la stabilise au plus bas.
+* **Mise en réserve de 1 à 3 mois** : Les fluctuations de la biomasse sont accentuées avec l'augmentation de la durée de mise en réserve. La biomasse semble se stabiliser progressivement, indiquant que les périodes de repos bien qu'ayant permis de maintenir globalement la biomasse plus haut, ne suffisent pas et elle se stabilise au niveau atteint sans réserve.
+* **Mise en réserve de 4 à 6 mois** : La biomasse fluctue d'autant plus que la période de repos est élevée. On peut observer les cycles durant les 10 ans de la simulation ce qui veut dire que la biomasse arrive à se reconstituer malgré les périodes de mise sous tension quand la pêche revient.
+
+Capital total des pêcheurs dans le temps (Deuxième figure) :
+
+* **Absence de réserve (0 mois)** : Le capital total pour atteindre un maximum et ensuite décroitre ce qui semble montrer un appauvrissement des populations au cours de la simulation. 
+* **Mise en réserve de 1 à 3 mois** : La croissance du capital total suit la même dynamique que pour la situation sans réserve, mais avec des situations d'appauvrissement moindre. 
+* **Mise en réserve de 4 à 6 mois** : À mesure que la durée de la mise en réserve augmente, la croissance du capital total augmente avec des ralentissements locaux au moment ou le lac est mis en réserve. Mais ces décroissances locales sont à mettre en regard avec les augmentations suivant la réouverture du lac.
+
+En général, il semble que la mise en réserve aide à reconstruire la biomasse et à promouvoir une croissance plus soutenue du capital des pêcheurs, bien que cela puisse limiter les gains à court terme. C'est un compromis classique dans la gestion des ressources naturelles entre l'exploitation immédiate et la conservation pour l'avenir.
+![](img/m0_biomass_reserve_int.png)
+
+![](img/m0_capCum_reserve_int.png)
+##### Réserve communautaire
+
+En considérant maintenant la mise en place de réserve communautaire, on retrouve après une chute importante de biomasse le pattern identifier sur le scénario précédent, c'est-à-dire que la biomasse du lac se maintient a un niveau plus élever avec les réserves communautaires que sans. La mise en place de ces réserves, ont un effet direct sur le capital qui en assurent une croissance continue sur le temps de la simulation. 
+![](img/m0_biomass_reserve_commu.png)
+![](img/m0_capCum_reserve_commu.png)
+#### La taille des filets joue un certain rôle
+On s'est mis ici dans une situation ou la réserve communautaire est maintenue. On constate alors que réduire la taille des filets a pour effet d'améliorer la quantité de biomasses dans le lac, et sur le long terme d'amélioré le capital des pêcheurs qui arrive a se maintenir très légèrement plus haut.
+![](img/m0_biomass_longFilet.png)
+![](img/m0_capCum_longFilet.png)
+#### Le nombre de sortie a elle un impacte sur le système ? 
+On peut voir sur les deux figures que restreindre le nombre de sorties n'a pas d'effet sur les résultats du modèle.
+![](img/m0_biomass_nbSorties.png)
+![](img/m0_capCum_nbSorties.png)
