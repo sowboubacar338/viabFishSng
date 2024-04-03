@@ -1,0 +1,30 @@
+import _file_.modelv0._
+import _file_.envMuse._
+
+// laisser tourner 250 heures
+val evolution = PSEEvolution(
+  evaluation = model,
+  parallelism = 100,
+  termination = 100000,
+  genome = Seq(
+      nbBoats in (100.0, 600.0),
+      ReserveIntegrale in (0.0, 6.0),
+      ZonesExclusionPeche in Seq(true,false),
+      PrixPoisson in (1000.0, 3000.0),
+      LongueurFilet in (1000.0, 4000.0),
+      LongueurFiletEtrangers in (1000.0, 4000.0)
+  ),
+  objective = Seq(
+    //om_sumBiomass aggregate "percentile(om_sumBiomass, Seq(5)).head" in(0.0 to 400000.0 by 1000.0), //Attention on veux dans la cadre de la viabilité que les résultats soit sur a 95%  --> seq(5)
+    //om_capitalTotal aggregate "percentile(om_capitalTotal, Seq(5)).head" in(0.0 to 1000000000.0 by 1000.0)
+    om_sumBiomass in(0.0 to 400000.0 by 1000.0), //Attention on veux dans la cadre de la viabilité que les résultats soit sur a 95%  --> seq(5)
+    om_capitalTotal in(0.0 to 1000000000.0 by 1000.0)
+    ),
+  // distribution = Island(10 minutes), // doit durée plus que le temps de calcul
+  stochastic = Stochastic(seed = mySeed, sample = 30)
+) hook (workDirectory / "results_pse_obj1", frequency = 10)
+
+//val env = EGIEnvironment("vo.complex-systems.eu")
+
+
+evolution on muse

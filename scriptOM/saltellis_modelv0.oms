@@ -1,4 +1,5 @@
 import _file_.modelv0._
+import _file_.envMuse._
 
 val replications = Replication(
     evaluation = model, // the model to run
@@ -17,7 +18,7 @@ val sensitivAnalyse = SensitivitySaltelli(
           LongueurFilet in (1000.0, 3000.0),
           LongueurFiletEtrangers in (1000.0, 3000.0),
           SortieSemaine in (1.0, 6.0),
-       //   ZonesExclusionPeche in (true, false),
+          ZonesExclusionPeche in Seq(true, false),
           ReserveIntegrale in (0.0, 12.0),
           PrixPoisson in (1000.0,3000.0),
           CoutMaintenance in (1000.0,5000.0)
@@ -29,16 +30,6 @@ val sensitivAnalyse = SensitivitySaltelli(
 
 
 
-val muse = SLURMEnvironment(
-    "delaye",
-    "muse-login.hpc-lr.univ-montp2.fr",
-    // optional parameters
-    partition = "agap_normal", // can be agap_short agap_normal agap_long
-    workDirectory = "/lustre/delaye/openmole",
-    //workDirectory = "/home/delaye/scratch/openmole",
-    sharedDirectory = "/storage/replicated/cirad_users/delaye/openmole",
-    time = 1 hours
-  )
 
 val local = LocalEnvironment(1)
 //sensitivAnalyse on muse by 20
