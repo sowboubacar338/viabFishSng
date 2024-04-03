@@ -1,12 +1,12 @@
 # viabFishSng
 
 - test stratégie de pêches
-	- nombre de sorties
-	- zone d'exclusion de pêche (temporaire ou intégrale)
-	- choix des zones de pêches
-	- longueur des filets
+	- nombre de sorties :white_check_mark:
+	- zone d'exclusion de pêche (temporaire ou intégrale) :white_check_mark:
+	- longueur des filets :white_check_mark:
+    - choix des zones de pêches 
 	- communication pour les zones de pêches
-- pipe d’exploration de modèle avec OpenMole
+- pipe d’exploration de modèle avec OpenMole :white_check_mark:
 - famille de modèles sur github ([cottineau 2014](https://ecm.univ-paris1.fr/nuxeo/site/esupversions/cab3b3d5-3c9d-48f6-887c-8e8b8df7a7d2), et [Grimm et al. 2014](https://www2.econ.iastate.edu/tesfatsi/TRACE.ModFramework.GrimmEtAl2014.pdf) )
 
 # Modèle M0
@@ -93,7 +93,7 @@ Les données d'entrée comprennent des fichiers GIS pour le lac, les villages, e
 
 ### Analyse de sensibilité
 
-Les résultats de l'analyse de sensibilité de Saltelli contiennent les indices de première ordre pour différents paramètres d'entrée. Chaque paramètre, comme le nombre de bateaux (`nbBoats`), la longueur du filet (`LongueurFilet`), la longueur du filet étrangers (`LongueurFiletEtrangers`), etc., est associé à deux valeurs qui représentent les indices de sensibilité pour deux sorties différentes de votre modèle (peut-être `om_sumBiomass` et `om_capitalTotal`).
+Les résultats de l'analyse de sensibilité de Saltelli (script [ici](scriptOM/saltellis_modelv0.oms)) contiennent les indices de première ordre pour différents paramètres d'entrée. Chaque paramètre, comme le nombre de bateaux (`nbBoats`), la longueur du filet (`LongueurFilet`), la longueur du filet étrangers (`LongueurFiletEtrangers`), etc., est associé à deux valeurs qui représentent les indices de sensibilité pour deux sorties différentes de votre modèle (peut-être `om_sumBiomass` et `om_capitalTotal`).
 
 Nous examinerons les indices de première ordre, qui mesurent l'effet direct de chaque paramètre d'entrée sur la variabilité de la sortie du modèle. Un indice plus élevé indique que le paramètre correspondant a un impact plus significatif sur la sortie.
 
@@ -122,6 +122,7 @@ Par exemple, pour `nbBoats`, les indices sont d'environ 0.686 et 0.347 pour les 
 | LongueurFilet | 0.023 |
 | SortieSemaine | 0.0007 |
 | CoutMaintenance | 0.00024 |
+
 ### Senarisation 
 On a pas explorer l'impacte des bateaux `nbBoat` sur la biomasse et le captiales
 
@@ -157,3 +158,5 @@ On s'est mis ici dans une situation ou la réserve communautaire est maintenue. 
 On peut voir sur les deux figures que restreindre le nombre de sorties n'a pas d'effet sur les résultats du modèle.
 ![](img/m0_biomass_nbSorties.png)
 ![](img/m0_capCum_nbSorties.png)
+### PSE (Pattern Space exploration)
+(script [ici](scriptOM/pse_modelv0.oms))
