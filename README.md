@@ -168,4 +168,8 @@ On peut voir sur les deux figures que restreindre le nombre de sorties n'a pas d
 ![](img/m0_biomass_nbSorties.png)
 ![](img/m0_capCum_nbSorties.png)
 ### PSE (Pattern Space exploration)
-(script [ici](scriptOM/pse_modelv0.oms))
+(script OpenMole  [ici](scriptOM/pse_modelv0.oms), et le scriptR est [là](scriptR/m0_PSE_plotly.R) )
+
+![](img/m0_pse.png)
+On voit que la biomasse est favorisée quand le temps de repos (couleur sombre) est élevé (6 mois), et que le nombre de bateaux est bas. Le capital, l'axe qui est en face de nous lui diminue quand le nombre de bateaux augmente et que la biomasse disponible diminue.
+
