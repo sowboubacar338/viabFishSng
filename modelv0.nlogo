@@ -23,6 +23,9 @@ globals [
   capitalTotal
   t1
   t2
+
+  meanMST         ; mean sojourn time MST for for all boat
+  medianMFET      ; median exit time  MFET for all boat
 ]
 
 patches-own[
@@ -44,7 +47,9 @@ boats-own[
   capture_totale
   capital
   capital_total
-  firstExitSatifaction  ;; if 9999  = NA
+  firstExitSatifaction  ;; if 9999  = NA  MFET in mathias et al. 2024
+  MST                   ;; mean sojourn time  in Mathias et al. 2024 as list
+  MSTc                  ;; a count on MST to have one number per boat
 ]
 
 extensions [gis]
@@ -135,7 +140,8 @@ to setup
         set shape "fisherboat"
         set team 1
         set heading InitHeading
-        set firstExitSatifaction 9999
+        set firstExitSatifaction 0
+        set MST []
       ]
       ;; Team = 2 : étrangers
       sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
@@ -143,7 +149,8 @@ to setup
         set shape "fisherboat"
         set team 2
         set heading InitHeading
-        set firstExitSatifaction 9999
+        set firstExitSatifaction 0
+        set MST []
       ]
     ]
 
@@ -407,8 +414,14 @@ to grow-biomass  ; patch procedure
 end
 
 to calculSatisfaction
-  if capital_total < SatisfactionCapital AND firstExitSatifaction = 9999 [
+  if capital_total < SatisfactionCapital AND firstExitSatifaction = 0 [
     set firstExitSatifaction ticks
+  ]
+
+  ;; mean sojourn time calculation
+  if capital_total < SatisfactionCapital [
+    set MST lput ticks MST
+    set MSTc length MST
   ]
 end
 
@@ -421,6 +434,9 @@ to statSummary
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
   ;print capital_moyen_2
   set capitalTotal capital_moyen_1 + capital_moyen_2
+
+  set meanMST mean[MSTc] of boats
+  set medianMFET median[firstExitSatifaction] of boats
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -838,6 +854,28 @@ SatisfactionCapital
 1
 0
 Number
+
+MONITOR
+206
+480
+296
+525
+NIL
+medianMFET
+2
+1
+11
+
+MONITOR
+297
+481
+369
+526
+NIL
+meanMST
+2
+1
+11
 
 @#$#@#$#@
 ## TODO
