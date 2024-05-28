@@ -44,6 +44,7 @@ boats-own[
   capture_totale
   capital
   capital_total
+  firstExitSatifaction  ;; if 9999  = NA
 ]
 
 extensions [gis]
@@ -134,6 +135,7 @@ to setup
         set shape "fisherboat"
         set team 1
         set heading InitHeading
+        set firstExitSatifaction 9999
       ]
       ;; Team = 2 : étrangers
       sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
@@ -141,6 +143,7 @@ to setup
         set shape "fisherboat"
         set team 2
         set heading InitHeading
+        set firstExitSatifaction 9999
       ]
     ]
 
@@ -255,27 +258,28 @@ to go
 
     ; pour la mise en place de la réserve intégrale
     ; si reserve integrale = 4 mois, peche autorisee pendant 8 mois = 8*30 jours
-    ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
-    move
+      ifelse ticks mod 360 < ((12 - ReserveIntegrale) * 30)[
+        move
 
-    ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
-    ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
-    ; maliens pechent plus donc 1.5 * filet
-      while [ReleveFilet < (LongueurFiletEtrangers / 250)][
-        fishingEtrangers
-        set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogueEtrangers)
-        set capital_total capital_total + capture_totale * PrixPoisson
-      ;let _fishAvalableHere [biomass] of patch-here
-      set ReleveFilet ReleveFilet + 1
-      moveForward
-      ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
-    ]]
-    [
-      set capture 0
-      set capture_totale capture_totale + capture
-      set capital_total capital_total + capital
-    ]
+        ; pirogue sur un seul patch alors que peche sur 3km de filet donc on fait une boucle pour que la pirogue aille sur plusieurs patch en 1 journée
+        ; slider pour le nombre de patch sachant que 1 patch = 250 mètres = 0.25 km donc 12 patch = 3000 mètres = 3 km
+        ; maliens pechent plus donc 1.5 * filet
+        while [ReleveFilet < (LongueurFiletEtrangers / 250)][
+          fishingEtrangers
+          set capture_totale min (list (capture_totale + capture) QtéMaxPoissonPirogueEtrangers)
+          set capital_total capital_total + capture_totale * PrixPoisson
+          ;let _fishAvalableHere [biomass] of patch-here
+          set ReleveFilet ReleveFilet + 1
+          moveForward
+          ;set capital capital + max list (PrixPoisson *  ((CaptureEtrangers / 12) * _fishAvalableHere) - CoutMaintenance) 0
+        ]
+      ][
+        set capture 0
+        set capture_totale capture_totale + capture
+        set capital_total capital_total + capital
+      ]
     set capital_total_2 capital_total_2 + capital_total
+    calculSatisfaction
     ]
 
   ]
@@ -400,6 +404,12 @@ to grow-biomass  ; patch procedure
   ;show word "premier terme" (r * _previousBiomass)
   ; show word "sec terme" (1 - (_previousBiomass / k))
   set biomass _previousBiomass + (r * _previousBiomass * (1 - (_previousBiomass / kLakeCell))) ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+end
+
+to calculSatisfaction
+  if capital_total < SatisfactionCapital AND firstExitSatifaction = 9999 [
+    set firstExitSatifaction ticks
+  ]
 end
 
 to statSummary
@@ -597,6 +607,7 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot capital_moyen_1"
+"pen-1" 1.0 0 -7500403 true "" "plot SatisfactionCapital"
 
 SLIDER
 1074
@@ -816,6 +827,17 @@ SortieSemaine
 1
 Jours
 HORIZONTAL
+
+INPUTBOX
+1098
+490
+1221
+550
+SatisfactionCapital
+40000.0
+1
+0
+Number
 
 @#$#@#$#@
 ## TODO
@@ -1172,7 +1194,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.3.0
+NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
