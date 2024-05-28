@@ -434,9 +434,10 @@ to statSummary
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
   ;print capital_moyen_2
   set capitalTotal capital_moyen_1 + capital_moyen_2
-
-  set meanMST mean[MSTc] of boats
-  set medianMFET median[firstExitSatifaction] of boats
+  if ticks > 0 [
+    set meanMST mean[MSTc] of boats / ticks
+    set medianMFET median[firstExitSatifaction] of boats
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -845,10 +846,10 @@ Jours
 HORIZONTAL
 
 INPUTBOX
-1098
-490
-1221
-550
+371
+481
+494
+541
 SatisfactionCapital
 40000.0
 1
