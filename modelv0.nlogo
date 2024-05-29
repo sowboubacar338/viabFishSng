@@ -26,6 +26,14 @@ globals [
 
   meanMST         ; mean sojourn time MST for for all boat
   medianMFET      ; median exit time  MFET for all boat
+
+  MSTb
+  MSTb_l ; list of ticks
+  MSTc
+  MSTc_l ; list of ticks
+
+  MFETb
+  MFETc
 ]
 
 patches-own[
@@ -48,8 +56,8 @@ boats-own[
   capital
   capital_total
   firstExitSatifaction  ;; if 9999  = NA  MFET in mathias et al. 2024
-  MST                   ;; mean sojourn time  in Mathias et al. 2024 as list
-  MSTc                  ;; a count on MST to have one number per boat
+  AST                   ;; mean sojourn time  in Mathias et al. 2024 as list
+  ASTc                  ;; a count on MST to have one number per boat
 ]
 
 extensions [gis]
@@ -59,12 +67,15 @@ to InitiVar
   set k ((900000 * 1000) / 2144) ; / 1000 pour les tonnes
   set diffuseBiomass 0.5
   set InitHeading random 360
+  set MSTc_l []
+  set MSTb_l []
 end
 
 to setup
   clear-all
   reset-ticks
   InitiVar
+
   set myEnvelope gis:load-dataset "data/envelope.shp"
   set lac gis:load-dataset "data/lac.shp"
   set place gis:load-dataset "data/villages.shp"
@@ -141,7 +152,7 @@ to setup
         set team 1
         set heading InitHeading
         set firstExitSatifaction 0
-        set MST []
+        set AST []
       ]
       ;; Team = 2 : étrangers
       sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
@@ -150,7 +161,7 @@ to setup
         set team 2
         set heading InitHeading
         set firstExitSatifaction 0
-        set MST []
+        set AST []
       ]
     ]
 
@@ -420,9 +431,39 @@ to calculSatisfaction
 
   ;; mean sojourn time calculation
   if capital_total < SatisfactionCapital [
-    set MST lput ticks MST
-    set MSTc length MST
+    set AST lput ticks AST
+    set ASTc length AST
   ]
+
+
+end
+
+to caluclG
+  ;;MST et MFET a l'échelle de la simu
+  ;; ces indicateurs sont compatible avec le papier de Mathias et al 2024
+  set satifsactionCapitalG SatisfactionCapital * nbBoats
+
+  if sumBiomass < satisfactionBiomassG AND MFETb = 0 [
+    set MFETb ticks
+  ]
+
+  if sum [capital_total] of boats < satifsactionCapitalG AND MFETc = 0 [
+    set MFETc ticks
+  ]
+
+  if sum [capital_total] of boats < satifsactionCapitalG [
+    ;  MSTc
+    set MSTc_l lput ticks MSTc_l
+    set MSTc length MSTc_l
+  ]
+
+  if sumBiomass < satisfactionBiomassG [
+    ;  MSTb
+    set MSTb_l lput ticks MSTb_l
+    set MSTb length MSTc_l
+  ]
+
+
 end
 
 to statSummary
@@ -435,7 +476,7 @@ to statSummary
   ;print capital_moyen_2
   set capitalTotal capital_moyen_1 + capital_moyen_2
   if ticks > 0 [
-    set meanMST mean[MSTc] of boats / ticks
+    set meanMST mean[ASTc] of boats / ticks
     set medianMFET median[firstExitSatifaction] of boats
   ]
 end
@@ -878,6 +919,28 @@ meanMST
 1
 11
 
+INPUTBOX
+372
+549
+533
+609
+satifsactionCapitalG
+0.0
+1
+0
+Number
+
+INPUTBOX
+195
+565
+356
+625
+satisfactionBiomassG
+100000.0
+1
+0
+Number
+
 @#$#@#$#@
 ## TODO
 
@@ -1245,6 +1308,12 @@ NetLogo 6.4.0
     <metric>sumBiomass</metric>
     <metric>capital_moyen_1</metric>
     <metric>capital_moyen_2</metric>
+    <metric>meanMST</metric>
+    <metric>medianMFET</metric>
+    <metric>MFETb</metric>
+    <metric>MFETc</metric>
+    <metric>MSTb</metric>
+    <metric>MSTc</metric>
     <steppedValueSet variable="LongueurFilet" first="2000" step="1000" last="3000"/>
     <steppedValueSet variable="LongueurFiletEtrangers" first="2000" step="1000" last="3000"/>
     <steppedValueSet variable="SortieSemaine" first="2" step="1" last="7"/>
@@ -1268,6 +1337,57 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="nbBoats">
       <value value="490"/>
     </enumeratedValueSet>
+    <steppedValueSet variable="ReserveIntegrale" first="0" step="1" last="6"/>
+    <enumeratedValueSet variable="CoutMaintenance">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ProportionSenegalais">
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment_mathias" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="3650"/>
+    <metric>sumBiomass</metric>
+    <metric>capital_moyen_1</metric>
+    <metric>capital_moyen_2</metric>
+    <metric>meanMST</metric>
+    <metric>medianMFET</metric>
+    <metric>MFETb</metric>
+    <metric>MFETc</metric>
+    <metric>MSTb</metric>
+    <metric>MSTc</metric>
+    <runMetricsCondition>3649</runMetricsCondition>
+    <enumeratedValueSet variable="LongueurFilet">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="LongueurFiletEtrangers">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SortieSemaine">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ZonesExclusionPeche">
+      <value value="true"/>
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PrixPoisson">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="nbBoats" first="100" step="100" last="800"/>
     <steppedValueSet variable="ReserveIntegrale" first="0" step="1" last="6"/>
     <enumeratedValueSet variable="CoutMaintenance">
       <value value="3000"/>
