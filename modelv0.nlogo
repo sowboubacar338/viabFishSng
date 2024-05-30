@@ -64,7 +64,7 @@ extensions [gis]
 
 to InitiVar
   set r 0.015
-  set k ((900000 * 1000) / 2144) ; / 1000 pour les tonnes
+  set k BiomassInit;;((900000 * 1000) / 2144) ; / 1000 pour les tonnes
   set diffuseBiomass 0.5
   set InitHeading random 360
   set MSTc_l []
@@ -151,6 +151,7 @@ to setup
         set shape "fisherboat"
         set team 1
         set heading InitHeading
+        set capital_total capital_totalI
         set firstExitSatifaction 0
         set AST []
       ]
@@ -160,6 +161,7 @@ to setup
         set shape "fisherboat"
         set team 2
         set heading InitHeading
+        set capital_total capital_totalI
         set firstExitSatifaction 0
         set AST []
       ]
@@ -221,7 +223,7 @@ to go
     [
       set ReleveFilet 0 ; 1 relève de filet correspond à une relève de filet sur 1 patch (donc 12 relèves de filet = 1 filet de 3 km)
     set capture_totale 0 ; chaque jour capture initialement 0
-    set capital_total 0 - CoutMaintenance ; cout de sortie par jour
+    set capital_total capital_total - CoutMaintenance ; cout de sortie par jour
     set capital_total_1 0
     ;set capture 0
     ;set capital 0
@@ -266,7 +268,7 @@ to go
     [
       set ReleveFilet 0
     set capture_totale 0
-    set capital_total 0 - CoutMaintenance
+    set capital_total capital_total - CoutMaintenance
     set capital_total_2 0
     ;set capture 0
     ;set capital 0
@@ -747,7 +749,7 @@ QtéMaxPoissonPirogue
 QtéMaxPoissonPirogue
 0
 1000
-250.0
+34.0
 1
 1
 Kg
@@ -799,10 +801,10 @@ Mètres
 HORIZONTAL
 
 TEXTBOX
-1078
-204
-1228
-224
+1087
+226
+1237
+246
 RESERVES
 16
 0.0
@@ -817,7 +819,7 @@ QtéMaxPoissonPirogueEtrangers
 QtéMaxPoissonPirogueEtrangers
 0
 1000
-250.0
+31.0
 1
 1
 Kg
@@ -942,10 +944,10 @@ satisfactionBiomassG
 Number
 
 MONITOR
-510
-498
-567
-543
+882
+493
+939
+538
 NIL
 MSTc
 2
@@ -962,6 +964,28 @@ MFETc
 2
 1
 11
+
+INPUTBOX
+819
+196
+980
+256
+capital_totalI
+100000.0
+1
+0
+Number
+
+INPUTBOX
+993
+197
+1090
+257
+BiomassInit
+420000.0
+1
+0
+Number
 
 @#$#@#$#@
 ## TODO
@@ -1416,6 +1440,57 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="ProportionSenegalais">
       <value value="50"/>
     </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment_mathias_small" repetitions="1" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="3650"/>
+    <metric>sumBiomass</metric>
+    <metric>capital_moyen_1</metric>
+    <metric>capital_moyen_2</metric>
+    <metric>meanMST</metric>
+    <metric>medianMFET</metric>
+    <metric>MFETb</metric>
+    <metric>MFETc</metric>
+    <metric>MSTb</metric>
+    <metric>MSTc</metric>
+    <enumeratedValueSet variable="LongueurFilet">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="LongueurFiletEtrangers">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SortieSemaine">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ZonesExclusionPeche">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PrixPoisson">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="nbBoats" first="100" step="200" last="800"/>
+    <steppedValueSet variable="ReserveIntegrale" first="0" step="2" last="6"/>
+    <enumeratedValueSet variable="CoutMaintenance">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ProportionSenegalais">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="capital_totalI" first="0" step="20000" last="100000"/>
+    <steppedValueSet variable="BiomassInit" first="300000" step="100000" last="500000"/>
   </experiment>
 </experiments>
 @#$#@#$#@
