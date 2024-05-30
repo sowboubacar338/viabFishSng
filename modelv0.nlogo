@@ -302,7 +302,7 @@ to go
 
   ]
 
-
+  caluclG
   if sumBiomass <= 0[stop]
   statSummary
   ;print sumBiomass
@@ -454,13 +454,13 @@ to caluclG
   if sum [capital_total] of boats < satifsactionCapitalG [
     ;  MSTc
     set MSTc_l lput ticks MSTc_l
-    set MSTc length MSTc_l
+    set MSTc (length MSTc_l) / ticks
   ]
 
   if sumBiomass < satisfactionBiomassG [
     ;  MSTb
     set MSTb_l lput ticks MSTb_l
-    set MSTb length MSTc_l
+    set MSTb (length MSTc_l) / ticks
   ]
 
 
@@ -925,7 +925,7 @@ INPUTBOX
 533
 609
 satifsactionCapitalG
-0.0
+1.96E7
 1
 0
 Number
@@ -940,6 +940,28 @@ satisfactionBiomassG
 1
 0
 Number
+
+MONITOR
+510
+498
+567
+543
+NIL
+MSTc
+2
+1
+11
+
+MONITOR
+882
+544
+939
+589
+NIL
+MFETc
+2
+1
+11
 
 @#$#@#$#@
 ## TODO
@@ -1358,7 +1380,6 @@ NetLogo 6.4.0
     <metric>MFETc</metric>
     <metric>MSTb</metric>
     <metric>MSTc</metric>
-    <runMetricsCondition>3649</runMetricsCondition>
     <enumeratedValueSet variable="LongueurFilet">
       <value value="2000"/>
     </enumeratedValueSet>
