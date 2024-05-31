@@ -1445,6 +1445,58 @@ NetLogo 6.4.0
     <steppedValueSet variable="capital_totalI" first="0" step="20000" last="100000"/>
     <steppedValueSet variable="BiomassInit" first="300000" step="100000" last="500000"/>
   </experiment>
+  <experiment name="experiment_mathias" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="3650"/>
+    <metric>sumBiomass</metric>
+    <metric>biomassfished</metric>
+    <metric>capital_moyen_1</metric>
+    <metric>capital_moyen_2</metric>
+    <metric>meanMST</metric>
+    <metric>medianMFET</metric>
+    <metric>MFETb</metric>
+    <metric>MFETc</metric>
+    <metric>MSTb</metric>
+    <metric>MSTc</metric>
+    <enumeratedValueSet variable="LongueurFilet">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="LongueurFiletEtrangers">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SortieSemaine">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ZonesExclusionPeche">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PrixPoisson">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="nbBoats" first="100" step="200" last="800"/>
+    <steppedValueSet variable="ReserveIntegrale" first="0" step="2" last="6"/>
+    <enumeratedValueSet variable="CoutMaintenance">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ProportionSenegalais">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="capital_totalI" first="0" step="20000" last="100000"/>
+    <steppedValueSet variable="BiomassInit" first="100000" step="100000" last="500000"/>
+  </experiment>
 </experiments>
 @#$#@#$#@
 @#$#@#$#@
