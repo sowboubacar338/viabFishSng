@@ -21,6 +21,7 @@ globals [
   capital_moyen_1 ; capital moyen d'un pêcheur Sénégalais
   capital_moyen_2 ; capital moyen d'un pêcheur étranger
   capitalTotal
+  biomassfished
   t1
   t2
 
@@ -462,7 +463,7 @@ to caluclG
   if sumBiomass < satisfactionBiomassG [
     ;  MSTb
     set MSTb_l lput ticks MSTb_l
-    set MSTb (length MSTc_l) / ticks
+    set MSTb (length MSTb_l) / ticks
   ]
 
 
@@ -476,6 +477,7 @@ to statSummary
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
   set capital_moyen_2 mean[capital_total] of boats with [team = 2]
   ;print capital_moyen_2
+  set biomassfished sum[capture] of boats
   set capitalTotal capital_moyen_1 + capital_moyen_2
   if ticks > 0 [
     set meanMST mean[ASTc] of boats / ticks
@@ -1391,61 +1393,12 @@ NetLogo 6.4.0
       <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="experiment_mathias" repetitions="30" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="3650"/>
-    <metric>sumBiomass</metric>
-    <metric>capital_moyen_1</metric>
-    <metric>capital_moyen_2</metric>
-    <metric>meanMST</metric>
-    <metric>medianMFET</metric>
-    <metric>MFETb</metric>
-    <metric>MFETc</metric>
-    <metric>MSTb</metric>
-    <metric>MSTc</metric>
-    <enumeratedValueSet variable="LongueurFilet">
-      <value value="2000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="LongueurFiletEtrangers">
-      <value value="2000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="SortieSemaine">
-      <value value="6"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ZonesExclusionPeche">
-      <value value="true"/>
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
-      <value value="250"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
-      <value value="250"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PrixPoisson">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="nbBoats" first="100" step="100" last="800"/>
-    <steppedValueSet variable="ReserveIntegrale" first="0" step="1" last="6"/>
-    <enumeratedValueSet variable="CoutMaintenance">
-      <value value="3000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ProportionSenegalais">
-      <value value="50"/>
-    </enumeratedValueSet>
-  </experiment>
   <experiment name="experiment_mathias_small" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="3650"/>
     <metric>sumBiomass</metric>
+    <metric>biomassfished</metric>
     <metric>capital_moyen_1</metric>
     <metric>capital_moyen_2</metric>
     <metric>meanMST</metric>
