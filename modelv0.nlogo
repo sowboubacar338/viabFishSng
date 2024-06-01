@@ -454,13 +454,13 @@ to caluclG
     set MFETc ticks
   ]
 
-  if sum [capital_total] of boats < satifsactionCapitalG [
+  if sum [capital_total] of boats < satifsactionCapitalG  AND ticks > 0[
     ;  MSTc
     set MSTc_l lput ticks MSTc_l
     set MSTc (length MSTc_l) / ticks
   ]
 
-  if sumBiomass < satisfactionBiomassG [
+  if sumBiomass < satisfactionBiomassG AND ticks > 0 [
     ;  MSTb
     set MSTb_l lput ticks MSTb_l
     set MSTb (length MSTb_l) / ticks
