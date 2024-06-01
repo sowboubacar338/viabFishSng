@@ -4,13 +4,25 @@ rm(list = ls())
 setwd("~/github/viabFishSng/")
 data <- read.csv("results_BS/modelv0_experiment_mathias_31052024.csv", skip = 6, header = T)
 
+
+result <- data %>%
+  group_by(nbBoats, capital_totalI, ReserveIntegrale, BiomassInit) %>%
+  summarise(
+    MFETc = mean(MFETc, na.rm = TRUE),  # Calcul de la moyenne de MFET, en excluant les NA
+    MFETb = mean(MFETb, na.rm = TRUE),
+    MSTc  = mean(MSTc, na.rm = TRUE),
+    MSTb  = mean(MSTb, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
 # identifier les simu qui commence au dessu de la satisfaction pour biomass
 # et capital. On les spécifie comme satisfaisant
 
 ## Classer satisfait et non-satisfait
-## satisfait MFET = 0 ET MST = 3650 --> Jamais sorti
-sel <- data$MFETb == 0 & data$MSTb == 0
-data <- data %>%
+## satisfait MFET = 0 ET MST = 0 --> Jamais sorti
+sel <- result$MFETb == 0 & result$MSTb == 0
+result <- result %>%
   mutate(satisfaction = factor(ifelse(sel, "satisfaisant", "non-satisfaisant"),
                              levels = c("satisfaisant", "non-satisfaisant")))
 
@@ -20,15 +32,11 @@ d <- 0.90
 ## si MST > d alors la simu est durable
 ## Sinon elle est non durable
 
-sel <- data$MSTb > d
-data <- data %>%
+sel <- result$MSTb > d
+result <- result %>%
   mutate(durabilite = factor(ifelse(sel, "durable", "non-durable"),
                                levels = c("durable", "non-durable")))
  
-
-library(dplyr)
-library(ggplot2)
-
 # Ajouter une nouvelle colonne qui combine les niveaux
 data <- data %>%
   mutate(combined = interaction(satisfaction, durabilite))
@@ -48,7 +56,7 @@ ggplot(data, aes(x = nbBoats, y = BiomassInit, color = combined)) +
   theme_bw() +
   facet_grid(ReserveIntegrale~capital_totalI,labeller = label_both)+
   labs(color = "Combinaison", 
-       #title = "Graphique de Combinaison des Facteurs", 
+       title = "Satisfaction sur le biomass", 
        x = "nb bateau", y = "biomassInit")
 
 
