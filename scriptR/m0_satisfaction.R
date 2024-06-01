@@ -50,9 +50,9 @@ colors <- c(#"satisfaisant.durable" = "#7fc97f",
 
 
 # Créer le graphique
-ggplot(data, aes(x = nbBoats, y = BiomassInit, color = combined)) +
-  geom_point(size = 3) +
-  scale_color_manual(values = colors) +
+ggplot(data, aes(x = nbBoats, y = BiomassInit, fill = combined)) +
+  geom_tile() +
+  scale_fill_manual(values = colors) +
   theme_bw() +
   facet_grid(ReserveIntegrale~capital_totalI,labeller = label_both)+
   labs(color = "Combinaison", 
