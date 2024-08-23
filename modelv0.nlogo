@@ -1396,7 +1396,7 @@ NetLogo 6.4.0
       <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="experiment_mathias_small" repetitions="1" runMetricsEveryStep="false">
+  <experiment name="mathias_et_al" repetitions="20" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="3650"/>
@@ -1413,92 +1413,54 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="LongueurFilet">
       <value value="2000"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="LongueurFiletEtrangers">
-      <value value="2000"/>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="SortieSemaine">
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="31"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PrixPoisson">
+      <value value="1900"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="BiomassInit" first="10000" step="10000" last="200000"/>
+    <steppedValueSet variable="nbBoats" first="50" step="10" last="400"/>
+    <enumeratedValueSet variable="LongueurFiletEtrangers">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ReserveIntegrale">
+      <value value="0"/>
       <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="satifsactionCapitalG">
+      <value value="1085000000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SatisfactionCapital">
+      <value value="5000000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="satisfactionBiomassG">
+      <value value="100000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ZonesExclusionPeche">
       <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
-      <value value="1"/>
+    <enumeratedValueSet variable="SortieSemaine">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="capital_totalI">
+      <value value="100000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="PropBiomassPecheEtrangers">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
-      <value value="250"/>
+      <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="QtéMaxPoissonPirogue">
-      <value value="250"/>
+      <value value="34"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="PrixPoisson">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="nbBoats" first="100" step="200" last="800"/>
-    <steppedValueSet variable="ReserveIntegrale" first="0" step="2" last="6"/>
     <enumeratedValueSet variable="CoutMaintenance">
       <value value="3000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ProportionSenegalais">
       <value value="50"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="capital_totalI" first="0" step="20000" last="100000"/>
-    <steppedValueSet variable="BiomassInit" first="300000" step="100000" last="500000"/>
-  </experiment>
-  <experiment name="experiment_mathias" repetitions="30" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="3650"/>
-    <metric>sumBiomass</metric>
-    <metric>biomassfished</metric>
-    <metric>capital_moyen_1</metric>
-    <metric>capital_moyen_2</metric>
-    <metric>meanMST</metric>
-    <metric>medianMFET</metric>
-    <metric>MFETb</metric>
-    <metric>MFETc</metric>
-    <metric>MSTb</metric>
-    <metric>MSTc</metric>
-    <enumeratedValueSet variable="LongueurFilet">
-      <value value="2000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="LongueurFiletEtrangers">
-      <value value="2000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="SortieSemaine">
-      <value value="6"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ZonesExclusionPeche">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
-      <value value="1"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
-      <value value="250"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
-      <value value="250"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="PrixPoisson">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="nbBoats" first="100" step="200" last="800"/>
-    <steppedValueSet variable="ReserveIntegrale" first="0" step="2" last="6"/>
-    <enumeratedValueSet variable="CoutMaintenance">
-      <value value="3000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="ProportionSenegalais">
-      <value value="50"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="capital_totalI" first="0" step="20000" last="100000"/>
-    <steppedValueSet variable="BiomassInit" first="100000" step="100000" last="500000"/>
   </experiment>
 </experiments>
 @#$#@#$#@
