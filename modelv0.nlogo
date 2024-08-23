@@ -262,11 +262,10 @@ to go
       set capture_totale capture_totale + capture
       set capital_total capital_total + capital
     ]
+    calculSatisfaction
     set capital_total_1 capital_total_1 + capital_total
-    ]
-
-
-    [
+    ] ;; fin du if team = 1
+    [ ;; debut du if team = 2
       set ReleveFilet 0
     set capture_totale 0
     set capital_total capital_total - CoutMaintenance
@@ -428,12 +427,12 @@ to grow-biomass  ; patch procedure
 end
 
 to calculSatisfaction
-  if capital_total < SatisfactionCapital AND firstExitSatifaction = 0 [
+  if capital_total > SatisfactionCapital AND firstExitSatifaction = 0 [
     set firstExitSatifaction ticks
   ]
 
   ;; mean sojourn time calculation
-  if capital_total < SatisfactionCapital [
+  if capital_total > SatisfactionCapital [
     set AST lput ticks AST
     set ASTc length AST
   ]
@@ -450,11 +449,11 @@ to caluclG
     set MFETb ticks
   ]
 
-  if sum [capital_total] of boats < satifsactionCapitalG AND MFETc = 0 [
+  if sum [capital_total] of boats > satifsactionCapitalG AND MFETc = 0 [
     set MFETc ticks
   ]
 
-  if sum [capital_total] of boats < satifsactionCapitalG  AND ticks > 0[
+  if sum [capital_total] of boats > satifsactionCapitalG  AND ticks > 0[
     ;  MSTc
     set MSTc_l lput ticks MSTc_l
     set MSTc (length MSTc_l) / ticks
@@ -472,10 +471,14 @@ end
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
   ;set sumtest sum [biomass] of patches with[lake = FALSE]
-  set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  if any? boats with [team = 1] [
+    set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+  ]
   ;print capital_moyen_1
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
-  set capital_moyen_2 mean[capital_total] of boats with [team = 2]
+  if any? boats with [team = 2] [
+    set capital_moyen_2 mean[capital_total] of boats with [team = 2]
+  ]
   ;print capital_moyen_2
   set biomassfished sum[capture] of boats
   set capitalTotal capital_moyen_1 + capital_moyen_2
@@ -601,7 +604,7 @@ nbBoats
 nbBoats
 0
 500
-490.0
+217.0
 1
 1
 NIL
@@ -680,7 +683,7 @@ ReserveIntegrale
 ReserveIntegrale
 0
 12
-3.0
+0.0
 1
 1
 mois
@@ -693,7 +696,7 @@ SWITCH
 353
 ZonesExclusionPeche
 ZonesExclusionPeche
-1
+0
 1
 -1000
 
@@ -896,7 +899,7 @@ INPUTBOX
 494
 541
 SatisfactionCapital
-40000.0
+5000000.0
 1
 0
 Number
@@ -929,7 +932,7 @@ INPUTBOX
 533
 609
 satifsactionCapitalG
-1.96E7
+1.085E9
 1
 0
 Number
