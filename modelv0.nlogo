@@ -1396,7 +1396,7 @@ NetLogo 6.4.0
       <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="mathias_et_al" repetitions="20" runMetricsEveryStep="true">
+  <experiment name="mathias_et_al" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="3650"/>
