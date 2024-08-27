@@ -55,7 +55,15 @@ colors <- c("satisfaisant - durable" = "#008000",
 ggplot(result, aes(x = nbBoats, y = BiomassInit, fill = combined)) +
   geom_tile() +
   scale_fill_manual(values = colors) +
-  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),    # Taille du titre
+    axis.title.x = element_text(size = 16),                 # Taille du titre de l'axe X
+    axis.title.y = element_text(size = 16),                 # Taille du titre de l'axe Y
+    axis.text.x = element_text(size = 14),                  # Taille des textes de l'axe X
+    axis.text.y = element_text(size = 14),                  # Taille des textes de l'axe Y
+    legend.title = element_text(size = 14),                 # Taille du titre de la légende
+    legend.text = element_text(size = 12)                   # Taille des textes de la légende
+  )+
   #facet_grid(ReserveIntegrale~capital_totalI,labeller = label_both)+
   labs(color = "Combinaison", 
        title = "Satisfaction sur la biomass", 
@@ -98,7 +106,15 @@ result <- result %>%
 ggplot(result, aes(x = nbBoats, y = BiomassInit, fill = combined)) +
   geom_tile() +
   scale_fill_manual(values = colors) +
-  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),    # Taille du titre
+    axis.title.x = element_text(size = 16),                 # Taille du titre de l'axe X
+    axis.title.y = element_text(size = 16),                 # Taille du titre de l'axe Y
+    axis.text.x = element_text(size = 14),                  # Taille des textes de l'axe X
+    axis.text.y = element_text(size = 14),                  # Taille des textes de l'axe Y
+    legend.title = element_text(size = 14),                 # Taille du titre de la légende
+    legend.text = element_text(size = 12)                   # Taille des textes de la légende
+  )+
   # facet_grid(ReserveIntegrale~capital_totalI,labeller = label_both)+
   labs(color = "Combinaison", 
        title = "Satisfaction sur le capital", 
