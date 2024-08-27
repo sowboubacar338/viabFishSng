@@ -308,7 +308,7 @@ to go
   caluclG
   if sumBiomass <= 0[stop]
   statSummary
-  ;print sumBiomass
+
   ;print sumtest
 
   tick
@@ -448,10 +448,10 @@ to caluclG
   ;; ces indicateurs sont compatible avec le papier de Mathias et al 2024
   set satifsactionCapitalG SatisfactionCapital * nbBoats
 
-  if sumBiomass > satisfactionBiomassG AND MFETb = 0 [
+  if sumBiomass < satisfactionBiomassG AND MFETb = 0 [
     set MFETb ticks
   ]
-  if sumBiomass > satisfactionBiomassG AND ticks > 0 [
+  if sumBiomass < satisfactionBiomassG AND ticks > 0 [
     ;  MSTb
     set MSTb_l lput ticks MSTb_l
     set MSTb (length MSTb_l) / ticks
@@ -484,7 +484,7 @@ to statSummary
   ;print capital_moyen_2
   set biomassfished sum[capture] of boats
   set capitalTotal capital_moyen_1 + capital_moyen_2
-  if ticks > 0 [
+  if any? boats AND ticks > 0 [
     set meanMST mean[ASTc] of boats / ticks
     set medianMFET median[firstExitSatifaction] of boats
   ]
@@ -606,7 +606,7 @@ nbBoats
 nbBoats
 0
 500
-45.0
+274.0
 1
 1
 NIL
@@ -698,7 +698,7 @@ SWITCH
 353
 ZonesExclusionPeche
 ZonesExclusionPeche
-0
+1
 1
 -1000
 
@@ -934,7 +934,7 @@ INPUTBOX
 533
 609
 satifsactionCapitalG
-2.25E8
+1.37E9
 1
 0
 Number
@@ -993,6 +993,38 @@ BiomassInit
 1
 0
 Number
+
+TEXTBOX
+198
+536
+348
+564
+Sans pêche Biomass Max = 462 000
+10
+0.0
+1
+
+MONITOR
+944
+494
+1001
+539
+NIL
+MSTb
+2
+1
+11
+
+MONITOR
+945
+543
+1002
+588
+NIL
+MFETb
+2
+1
+11
 
 @#$#@#$#@
 ## TODO
@@ -1398,7 +1430,7 @@ NetLogo 6.4.0
       <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="mathias_et_al" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="mathias_et_al" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="3650"/>
@@ -1431,6 +1463,73 @@ NetLogo 6.4.0
     </enumeratedValueSet>
     <enumeratedValueSet variable="ReserveIntegrale">
       <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="satifsactionCapitalG">
+      <value value="1085000000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SatisfactionCapital">
+      <value value="5000000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="satisfactionBiomassG">
+      <value value="100000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ZonesExclusionPeche">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="SortieSemaine">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="capital_totalI">
+      <value value="100000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheEtrangers">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogue">
+      <value value="34"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="CoutMaintenance">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ProportionSenegalais">
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="mathias_et_al_reserve_integreal" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="3650"/>
+    <metric>sumBiomass</metric>
+    <metric>biomassfished</metric>
+    <metric>capital_moyen_1</metric>
+    <metric>capital_moyen_2</metric>
+    <metric>meanMST</metric>
+    <metric>medianMFET</metric>
+    <metric>MFETb</metric>
+    <metric>MFETc</metric>
+    <metric>MSTb</metric>
+    <metric>MSTc</metric>
+    <enumeratedValueSet variable="LongueurFilet">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PropBiomassPecheSenegalais">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="QtéMaxPoissonPirogueEtrangers">
+      <value value="31"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="PrixPoisson">
+      <value value="1900"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="BiomassInit" first="0" step="40000" last="200000"/>
+    <steppedValueSet variable="nbBoats" first="50" step="50" last="400"/>
+    <enumeratedValueSet variable="LongueurFiletEtrangers">
+      <value value="3000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="ReserveIntegrale">
+      <value value="0"/>
+      <value value="2"/>
+      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="satifsactionCapitalG">
       <value value="1085000000"/>
