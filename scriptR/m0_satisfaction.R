@@ -30,7 +30,7 @@ result <- result %>%
 
 ## classer sur la durabilite
 ## il faut définir un seuil d
-d <- 0.80
+d <- 0.50
 ## si MST > d alors la simu est durable
 ## Sinon elle est non durable
 
@@ -45,10 +45,10 @@ result <- result %>%
 
 
 # Définir un vecteur de couleurs
-colors <- c("satisfaisant - durable" = "#7fc97f",
-            "non-satisfaisant - durable" = "#beaed4",
-            "satisfaisant - non-durable" = "#fdc086",
-            "non-satisfaisant - non-durable" = "#ffff99")  # Couleur ajoutée pour la dernière combinaison
+colors <- c("satisfaisant - durable" = "#008000",
+            "non-satisfaisant - durable" = "#90EE90",
+            "satisfaisant - non-durable" = "#FFC0CB",
+            "non-satisfaisant - non-durable" = "#FF0000")  # Couleur ajoutée pour la dernière combinaison
 
 
 # Créer le graphique
