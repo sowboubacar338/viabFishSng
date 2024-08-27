@@ -146,28 +146,29 @@ to setup
     let _nearestPatch min-one-of (patches with [pcolor = blue or pcolor = green])[distance myself]
     move-to _nearestPatch ;; on déplace les villages près de l'eau
     ;; Team = 1 : Sénégalais
-    ask patch-here[
-      sprout-boats precision(_nbBoatVillage * (ProportionSenegalais / 100)) 0  [
-        set color red
-        set shape "fisherboat"
-        set team 1
-        set heading InitHeading
-        set capital_total capital_totalI
-        set firstExitSatifaction 0
-        set AST []
-      ]
-      ;; Team = 2 : étrangers
-      sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
-        set color green
-        set shape "fisherboat"
-        set team 2
-        set heading InitHeading
-        set capital_total capital_totalI
-        set firstExitSatifaction 0
-        set AST []
+    if nbBoats > 0 [
+      ask patch-here[
+        sprout-boats precision(_nbBoatVillage * (ProportionSenegalais / 100)) 0  [
+          set color red
+          set shape "fisherboat"
+          set team 1
+          set heading InitHeading
+          set capital_total capital_totalI
+          set firstExitSatifaction 0
+          set AST []
+        ]
+        ;; Team = 2 : étrangers
+        sprout-boats precision((_nbBoatVillage * (1 - (ProportionSenegalais / 100)))) 0 [
+          set color green
+          set shape "fisherboat"
+          set team 2
+          set heading InitHeading
+          set capital_total capital_totalI
+          set firstExitSatifaction 0
+          set AST []
+        ]
       ]
     ]
-
   ]
 
 
@@ -420,10 +421,12 @@ to diffuse_biomass ; patch procedure
 end
 
 to grow-biomass  ; patch procedure
-  let _previousBiomass biomass
-  ;show word "premier terme" (r * _previousBiomass)
-  ; show word "sec terme" (1 - (_previousBiomass / k))
-  set biomass _previousBiomass + (r * _previousBiomass * (1 - (_previousBiomass / kLakeCell))) ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+  if biomass > 0 [
+    let _previousBiomass biomass
+    ;show word "premier terme" (r * _previousBiomass)
+    ; show word "sec terme" (1 - (_previousBiomass / k))
+    set biomass _previousBiomass + (r * _previousBiomass * (1 - (_previousBiomass / kLakeCell))) ; effort pecheurs de l'equation de Rakya est inclu dans la previousBiomass
+  ]
 end
 
 to calculSatisfaction
@@ -445,9 +448,15 @@ to caluclG
   ;; ces indicateurs sont compatible avec le papier de Mathias et al 2024
   set satifsactionCapitalG SatisfactionCapital * nbBoats
 
-  if sumBiomass < satisfactionBiomassG AND MFETb = 0 [
+  if sumBiomass > satisfactionBiomassG AND MFETb = 0 [
     set MFETb ticks
   ]
+  if sumBiomass > satisfactionBiomassG AND ticks > 0 [
+    ;  MSTb
+    set MSTb_l lput ticks MSTb_l
+    set MSTb (length MSTb_l) / ticks
+  ]
+
 
   if sum [capital_total] of boats > satifsactionCapitalG AND MFETc = 0 [
     set MFETc ticks
@@ -458,13 +467,6 @@ to caluclG
     set MSTc_l lput ticks MSTc_l
     set MSTc (length MSTc_l) / ticks
   ]
-
-  if sumBiomass < satisfactionBiomassG AND ticks > 0 [
-    ;  MSTb
-    set MSTb_l lput ticks MSTb_l
-    set MSTb (length MSTb_l) / ticks
-  ]
-
 
 end
 
@@ -604,7 +606,7 @@ nbBoats
 nbBoats
 0
 500
-217.0
+45.0
 1
 1
 NIL
@@ -932,7 +934,7 @@ INPUTBOX
 533
 609
 satifsactionCapitalG
-1.085E9
+2.25E8
 1
 0
 Number
@@ -1396,7 +1398,7 @@ NetLogo 6.4.0
       <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="mathias_et_al" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="mathias_et_al" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="3650"/>
@@ -1422,14 +1424,13 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="PrixPoisson">
       <value value="1900"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="BiomassInit" first="10000" step="10000" last="200000"/>
-    <steppedValueSet variable="nbBoats" first="50" step="10" last="400"/>
+    <steppedValueSet variable="BiomassInit" first="0" step="40000" last="200000"/>
+    <steppedValueSet variable="nbBoats" first="50" step="50" last="400"/>
     <enumeratedValueSet variable="LongueurFiletEtrangers">
       <value value="3000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ReserveIntegrale">
       <value value="0"/>
-      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="satifsactionCapitalG">
       <value value="1085000000"/>
@@ -1441,10 +1442,10 @@ NetLogo 6.4.0
       <value value="100000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="ZonesExclusionPeche">
-      <value value="true"/>
+      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="SortieSemaine">
-      <value value="6"/>
+      <value value="7"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="capital_totalI">
       <value value="100000"/>
