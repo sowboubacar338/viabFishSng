@@ -46,9 +46,9 @@ result <- result %>%
 
 # Définir un vecteur de couleurs
 colors <- c("satisfaisant - durable" = "#008000",
-            "non-satisfaisant - durable" = "#90EE90",
-            "satisfaisant - non-durable" = "#FFC0CB",
-            "non-satisfaisant - non-durable" = "#FF0000")  # Couleur ajoutée pour la dernière combinaison
+            "non-satisfaisant - durable" = "#FF0000",
+            "satisfaisant - non-durable" = "#90EE90",
+            "non-satisfaisant - non-durable" = "#FFC0CB")  # Couleur ajoutée pour la dernière combinaison
 
 
 # Créer le graphique
