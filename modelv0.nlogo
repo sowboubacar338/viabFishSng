@@ -25,8 +25,8 @@ globals [
   t1
   t2
 
-  meanMST         ; mean sojourn time MST for for all boat
-  medianMFET      ; median exit time  MFET for all boat
+  meanMST         ; mean sojourn time on captial MST for for all boat
+  medianMFET      ; median exit time on capital  MFET for all boat
 
   MSTb
   MSTb_l ; list of ticks
@@ -613,10 +613,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-591
-508
-763
-541
+527
+500
+699
+533
 PrixPoisson
 PrixPoisson
 0
@@ -628,10 +628,10 @@ CFA/kg
 HORIZONTAL
 
 SLIDER
-590
-552
-799
-585
+526
+544
+735
+577
 CoutMaintenance
 CoutMaintenance
 0
@@ -833,10 +833,10 @@ Kg
 HORIZONTAL
 
 TEXTBOX
-592
-486
-742
-506
+528
+478
+678
+498
 CAPITAL
 16
 0.0
@@ -906,33 +906,11 @@ SatisfactionCapital
 0
 Number
 
-MONITOR
-206
-480
-296
-525
-NIL
-medianMFET
-2
-1
-11
-
-MONITOR
-297
-481
-369
-526
-NIL
-meanMST
-2
-1
-11
-
 INPUTBOX
-372
-549
-533
-609
+1170
+544
+1331
+604
 satifsactionCapitalG
 1.37E9
 1
@@ -940,10 +918,10 @@ satifsactionCapitalG
 Number
 
 INPUTBOX
-195
-565
-356
-625
+998
+544
+1159
+604
 satisfactionBiomassG
 100000.0
 1
@@ -951,10 +929,10 @@ satisfactionBiomassG
 Number
 
 MONITOR
-882
-493
-939
-538
+870
+505
+927
+550
 NIL
 MSTc
 2
@@ -962,10 +940,10 @@ MSTc
 11
 
 MONITOR
-882
-544
-939
-589
+870
+556
+927
+601
 NIL
 MFETc
 2
@@ -995,20 +973,20 @@ BiomassInit
 Number
 
 TEXTBOX
-198
-536
-348
-564
+1005
+606
+1155
+634
 Sans pêche Biomass Max = 462 000
 10
 0.0
 1
 
 MONITOR
-944
-494
-1001
-539
+932
+506
+989
+551
 NIL
 MSTb
 2
@@ -1016,15 +994,105 @@ MSTb
 11
 
 MONITOR
-945
-543
-1002
-588
+933
+555
+990
+600
 NIL
 MFETb
 2
 1
 11
+
+TEXTBOX
+860
+486
+1010
+504
+A l'échelle de la simu
+12
+0.0
+1
+
+TEXTBOX
+837
+558
+872
+597
+First Exit Time
+9
+0.0
+1
+
+TEXTBOX
+836
+514
+874
+541
+Sejour Time
+9
+0.0
+1
+
+TEXTBOX
+1016
+521
+1280
+555
+Seuil de satisfaction à l'échelle du système 
+12
+0.0
+1
+
+TEXTBOX
+832
+471
+1381
+493
+---------------------------------------------------------------------------------------------------------------------------------------
+12
+0.0
+1
+
+TEXTBOX
+830
+630
+1372
+651
+---------------------------------------------------------------------------------------------------------------------------------------
+12
+0.0
+1
+
+TEXTBOX
+821
+508
+836
+610
+|\n|\n|\n|\n|\n|
+12
+0.0
+1
+
+TEXTBOX
+1367
+506
+1382
+608
+|\n|\n|\n|\n|\n|
+12
+0.0
+1
+
+TEXTBOX
+1224
+483
+1374
+506
+Indic Mathias et al.
+16
+0.0
+1
 
 @#$#@#$#@
 ## TODO
