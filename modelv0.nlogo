@@ -568,6 +568,7 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot sumBiomass"
+"pen-1" 1.0 0 -7500403 true "" "plot satisfactionBiomassG"
 
 MONITOR
 590
