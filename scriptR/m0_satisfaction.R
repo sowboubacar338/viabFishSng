@@ -86,3 +86,28 @@ CapS <- ggplot(data = data)+
 
 compi <- grid.arrange(biomS, CapS)
 ggsave("~/test.png", compi)
+
+
+# Classify states based on the given conditions
+data <- data %>%
+  mutate(
+    state_both = case_when(
+      state_c == "Satisfactory and Durable" & state_b == "Satisfactory and Durable" ~ "Satisfactory and Durable",
+      state_c != "Satisfactory and Durable" & state_b == "Satisfactory and Durable" ~ "Satisfactory and Non-Durable",
+      state_c == "Satisfactory and Durable" & state_b != "Satisfactory and Durable" ~ "Satisfactory and Non-Durable",
+      state_c == "Satisfactory and Non-Durable" & state_b == "Satisfactory and Non-Durable" ~ "Satisfactory and Non-Durable",
+      state_c == "Non-Satisfactory and Durable" & state_b == "Non-Satisfactory and Durable" ~ "Non-Satisfactory and Durable",
+      state_c == "Non-Satisfactory and Durable" & state_b == "Non-Satisfactory and Durable" ~ "Non-Satisfactory and Durable",
+      state_c == "Non-Satisfactory Transitional\n(Non-Durable)" & state_b == "Non-Satisfactory Transitional\n(Non-Durable)" ~ "Non-Satisfactory Transitional\n(Non-Durable)",
+      state_c != "Non-Satisfactory Transitional\n(Non-Durable)" & state_b == "Non-Satisfactory Transitional\n(Non-Durable)" ~ "Non-Satisfactory and Durable",
+      state_c == "Non-Satisfactory Transitional\n(Non-Durable)" & state_b != "Non-Satisfactory Transitional\n(Non-Durable)" ~ "Non-Satisfactory and Durable",
+      state_c == "Satisfactory and Durable" & state_b == "Non-Satisfactory and Durable" ~ "Non-Satisfactory and Durable", 
+      state_c == "Satisfactory and Non-Durable" & state_b == "Non-Satisfactory and Durable" ~ "Non-Satisfactory and Durable"
+    )
+  )
+
+ggplot(data = data)+
+  geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_both))+
+  theme_light()+
+  labs(title = "From both perspective", subtitle = "regarding the system",
+       x = "Boat Number", y = "Initial Biomass", fill = "State")
