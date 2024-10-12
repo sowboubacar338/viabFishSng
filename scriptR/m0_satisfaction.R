@@ -1,6 +1,7 @@
 # Load necessary libraries
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 rm(list = ls())
 setwd("~/github/viabFishSng/")
 
@@ -19,7 +20,7 @@ clean_and_average <- function(value) {
 
 
 # Load the dataset (replace with your file path)
-data <- read.csv("results_pse/results_pse_obj_biomassCapital.csv", header = T)
+data <- read.csv("results_BS/planComplet_mathias1.csv", header = T)
 
 
 # Appliquer la fonction sur la colonne 'values'
@@ -45,21 +46,13 @@ data$state_b <- factor(data$state_b, levels = c("Satisfactory and Durable", "Sat
 # View the resulting classification
 unique(data$state_b)
 
-ggplot(data = data)+
-  geom_point(aes(x = nbBoats, y = BiomassInit, colour = state_b),size = 5)+
+biomS <- ggplot(data = data)+
+  geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_b))+
   theme_light()+
   labs(title = "From biomass perspective", subtitle = "regarding the system",
-       x = "Boat Number", y = "Initial Biomass", colour = "State")
+       x = "Boat Number", y = "Initial Biomass", fill = "State")
 
 ggsave("img/m0_pse_fatisfaction_mathias_biomass.png", width = 10, height = 8)
-
-
-## Regarder PSE de manière plus habituelle
-
-ggplot(data = data)+
-  geom_point(aes(x = objective.om_MFETb, y = objective.om_MSTb, colour = nbBoats) )+
-  theme_light()+
-  labs(title = "From biomass perspective", subtitle = "regarding the system")
 
 
 # Comment les points Satisfactory and Durable peuvent l'être ? 
@@ -73,17 +66,23 @@ sub.df <- data[sel,]
 data <- data %>%
   mutate(
     state_c = case_when(
-      om_MFETc <= 1 & om_MSTc >= delta_t ~ "Non-Satisfactory and Non-Durable",  # MFET <= 1 et MST >= ∆t
-      om_MFETc <= 1 & om_MSTc <= delta_t ~ "Non-Satisfactory and Durable",     # MFET <= 1 et MST <= ∆t
-      om_MSTc >= delta_t ~ "Satisfactory and Durable",                               # MST >= ∆t
-      om_MSTc < delta_t ~ "Satisfactory and Non-Durable"                            # MST < ∆t
+      om_MFETc <= 30 & om_MSTc >= delta_t ~ "Satisfactory and Durable",  # MFET <= 1 et MST >= ∆t
+      om_MFETc <= 30 & om_MSTc <= delta_t ~ "Non-Satisfactory and Durable",     # MFET <= 1 et MST <= ∆t
+      om_MSTc >= delta_t ~  "Satisfactory and Non-Durable",                               # MST >= ∆t
+      om_MSTc < delta_t ~ "Non-Satisfactory Transitional\n(Non-Durable)"                            # MST < ∆t
     )
   )
 
-# View the resulting classification
-unique(data$state)
+data$state_c <- factor(data$state_c, levels = c("Satisfactory and Durable", "Satisfactory and Non-Durable", "Non-Satisfactory Transitional\n(Non-Durable)","Non-Satisfactory and Durable"))
 
-ggplot(data = data)+
-  geom_point(aes(x = nbBoats, y = BiomassInit, colour = state_c))+
+# View the resulting classification
+unique(data$state_c)
+
+CapS <- ggplot(data = data)+
+  geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_c))+
   theme_light()+
-  labs(title = "From capital perspective", subtitle = "regarding the system")
+  labs(title = "From capital perspective", subtitle = "regarding the system",
+       x = "Boat Number", y = "Initial Biomass", fill = "State")
+
+compi <- grid.arrange(biomS, CapS)
+ggsave("~/test.png", compi)
