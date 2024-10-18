@@ -45,7 +45,7 @@ data <- data %>%
       BiomassInit >= satisfactionb & om_MSTb <= delta_t ~ "Satisfactory and Durable",
       BiomassInit >= satisfactionb & om_MSTb > delta_t ~ "Satisfactory and Non-Durable",
       
-      BiomassInit < satisfactionb & om_MSTb <= delta_t & om_MSTb > delta_r ~ "Resilient Satisfactory and Durable",
+      BiomassInit < satisfactionb & om_MSTb <= delta_t & om_MSTb > delta_r ~ "Resilient Non-Satisfactory and Non-Durable",
       
       BiomassInit < satisfactionb & om_MSTb <= delta_t ~ "Non-Satisfactory and Non-Durable",
       BiomassInit < satisfactionb & om_MSTb > delta_t ~ "Non-Satisfactory and Durable",
@@ -57,17 +57,19 @@ data <- data %>%
 ##########
 
 
-data$state_b <- factor(data$state_b, levels = c("Satisfactory and Durable", "Satisfactory and Non-Durable",
-                                                "Non-Satisfactory and Non-Durable","Non-Satisfactory and Durable",
-                                                "Resilient Satisfactory and Non-Durable", "Resilient Satisfactory and Durable"))
+data$state_b <- factor(data$state_b, levels = c("Satisfactory and Durable", "Satisfactory and Non-Durable","Resilient Satisfactory and Non-Durable",
+                                                "Non-Satisfactory and Non-Durable","Resilient Non-Satisfactory and Non-Durable","Non-Satisfactory and Durable"
+                                                 ))
 # View the resulting classification
 # unique(data$state_b)
 
 
+
 biomS <- ggplot(data = data)+
   geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_b))+
-  scale_fill_manual(values = c('#4575b4','#91bfdb','#fee090','#d73027','#e0f3f8','#fc8d59'))+
+  scale_fill_manual(values = c('#1a9850','#91cf60','#d9ef8b','#fee090','#fc8d59','#d73027'))+
   theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   facet_grid(~ReserveIntegrale)+
   labs(title = "From biomass perspective", subtitle = "regarding the system",
        x = "Boat Number", y = "Initial Biomass", fill = "State")
