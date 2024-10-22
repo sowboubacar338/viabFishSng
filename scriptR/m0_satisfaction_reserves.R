@@ -76,3 +76,16 @@ biomS <- ggplot(data = data)+
 biomS
 ggsave("img/m0_pse_fatisfaction_mathias_biomass.png", width = 10, height = 8)
 
+biomSWR <- ggplot(data = data[data$ReserveIntegrale == 0,])+
+  geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_b))+
+  scale_fill_manual(values = c('#1a9850','#91cf60','#d9ef8b','#fee090','#d73027'))+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  # facet_grid(~ReserveIntegrale)+
+  labs(title = "From biomass perspective", subtitle = "regarding the system",
+       x = "Boat Number", y = "Initial Biomass", fill = "State")
+biomSWR
+ggsave("img/m0_pse_fatisfaction_mathias_biomass_WithoutReserve.png", width = 10, height = 8)
+
+
+
