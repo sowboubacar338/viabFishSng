@@ -20,7 +20,7 @@ clean_and_average <- function(value) {
 
 
 # Load the dataset (replace with your file path)
-data <- read.csv("results_BS/planComplet_mathias1.csv", header = T)
+data <- read.csv("results_BS/planComplet_mathias2.csv", header = T)
 
 
 # Appliquer la fonction sur la colonne 'values'
@@ -51,7 +51,7 @@ biomS <- ggplot(data = data)+
   theme_light()+
   labs(title = "From biomass perspective", subtitle = "regarding the system",
        x = "Boat Number", y = "Initial Biomass", fill = "State")
-
+biomS
 ggsave("img/m0_pse_fatisfaction_mathias_biomass.png", width = 10, height = 8)
 
 
@@ -83,7 +83,7 @@ CapS <- ggplot(data = data)+
   theme_light()+
   labs(title = "From capital perspective", subtitle = "regarding the system",
        x = "Boat Number", y = "Initial Biomass", fill = "State")
-
+CapS
 compi <- grid.arrange(biomS, CapS)
 ggsave("~/test.png", compi)
 
@@ -105,6 +105,8 @@ data <- data %>%
       state_c == "Satisfactory and Non-Durable" & state_b == "Non-Satisfactory and Durable" ~ "Non-Satisfactory and Durable"
     )
   )
+data$state_both <- factor(data$state_both, levels = c("Satisfactory and Durable", "Satisfactory and Non-Durable", "Non-Satisfactory Transitional\n(Non-Durable)","Non-Satisfactory and Durable"))
+
 
 ggplot(data = data)+
   geom_tile(aes(x = nbBoats, y = BiomassInit, fill = state_both))+
