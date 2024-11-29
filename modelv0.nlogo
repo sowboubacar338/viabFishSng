@@ -64,9 +64,9 @@ boats-own[
 extensions [gis]
 
 to InitiVar
-  set r 0.015
+  set r r_i;;0.015 pour rakya
   set k BiomassInit;;((900000 * 1000) / 2144) ; / 1000 pour les tonnes
-  set diffuseBiomass 0.5
+  set diffuseBiomass diffB_i ;;0.5
   set InitHeading random 360
   set MSTc_l []
   set MSTb_l []
@@ -1095,6 +1095,28 @@ Indic Mathias et al.
 0.0
 1
 
+INPUTBOX
+38
+519
+110
+579
+r_i
+0.015
+1
+0
+Number
+
+INPUTBOX
+38
+580
+108
+640
+diffB_i
+0.0
+1
+0
+Number
+
 @#$#@#$#@
 ## TODO
 
@@ -1645,5 +1667,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+1
 @#$#@#$#@
