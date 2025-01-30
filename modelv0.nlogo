@@ -35,6 +35,13 @@ globals [
 
   MFETb
   MFETc
+
+ tailleMinPetit   ; Taille minimale des petits poissons (en mm)
+ tailleMaxPetit   ; Taille maximale des petits poissons
+ tailleMinMoyen  ; Taille minimale des poissons moyens
+ tailleMaxMoyen  ; Taille maximale des poissons moyens
+ tailleMinGrang   ; Taille minimale des grands poissons
+ tailleMaxGrand   ; Taille maximale des grands poissons
 ]
 
 patches-own[
@@ -86,6 +93,14 @@ to setup
   set place gis:load-dataset "data/villages.shp"
   set exclusionPeche gis:load-dataset "data/zoneExclusionPeche.shp"
   setup-world-envelope
+
+;; Initialisation des tailles de poissons (en mm)
+  set tailleMinPetit 0
+  set tailleMaxPetit 50
+  set tailleMaxPetit 51
+  set tailleMaxMoyen 100
+  set tailleMinGrang 101
+  set tailleMaxGrand 500
 
   ask patches [
     set pcolor gray
