@@ -349,7 +349,7 @@ to go
     ]
 
   ]
-
+  reproduceFish
   caluclG
   if sumBiomass <= 0[stop]
   statSummary
@@ -396,7 +396,16 @@ to-report is_fishable? [patch_ahead]
   report fishable?
 end
 
+to reproduceFish
+  ask patches with [lake = TRUE] [
+    ;; Croissance des petits poissons
+    set BiomassPetit BiomassPetit * (1 + rBiomassPetit)
 
+    ;; Reproduction : les grands poissons produisent des petits poissons
+    set BiomassPetit BiomassPetit + (BiomassGrand * reproductionRate)
+
+  ]
+end
 to fishingSenegalais
 let _tailleMaille tailleMaille1 ; Taille de la maille du filet
   let _capture 0 ; Capture totale
