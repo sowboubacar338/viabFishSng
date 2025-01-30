@@ -16,6 +16,11 @@ globals [
   InitHeading ; direction initiale des pirogues
   ;; global output
   sumBiomass ; biomasse du lac
+  sumBiomassClass   
+  sumBiomassPetit
+  sumBiomassMoyen
+  sumBiomassGrand
+
   capital_total_1 ; somme des capitaux des pêcheurs Sénégalais
   capital_total_2 ; somme des capitaux des pêcheurs étrangers
   capital_moyen_1 ; capital moyen d'un pêcheur Sénégalais
@@ -572,6 +577,10 @@ end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
+set sumBiomassClass sum [BiomassPetit + BiomassMoyen + BiomassGrand] of lakeCells
+set sumBiomassPetit sum [BiomassPetit] of lakeCells
+set sumBiomassMoyen sum [BiomassMoyen] of lakeCells
+set sumBiomassGrand sum [BiomassGrand] of lakeCells
   ;set sumtest sum [biomass] of patches with[lake = FALSE]
   if any? boats with [team = 1] [
     set capital_moyen_1 mean[capital_total] of boats with [team = 1]
