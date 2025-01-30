@@ -47,6 +47,14 @@ globals [
  tailleMaxMoyen  ; Taille maximale des poissons moyens
  tailleMinGrang   ; Taille minimale des grands poissons
  tailleMaxGrand   ; Taille maximale des grands poissons
+
+;;Captue totale par classe pour chaque equipe de pêcheur
+ captureTotalePetitSenegalais
+ captureTotaleMoyenSenegalais
+ captureTotaleGrandSenegalais
+ captureTotalePetitEtrangers
+ captureTotaleMoyenEtrangers
+ captureTotaleGrandEtrangers
 ]
 
 patches-own[
@@ -584,12 +592,19 @@ set sumBiomassGrand sum [BiomassGrand] of lakeCells
   ;set sumtest sum [biomass] of patches with[lake = FALSE]
   if any? boats with [team = 1] [
     set capital_moyen_1 mean[capital_total] of boats with [team = 1]
+    set captureTotalePetitSenegalais sum [capturePetitSenegalais] of boats with [team = 1]
+    set captureTotaleMoyenSenegalais sum [captureMoyenSenegalais] of boats with [team = 1]
+    set captureTotaleGrandSenegalais sum [captureGrandSenegalais] of boats with [team = 1]
   ]
   ;print capital_moyen_1
   ;set capital_moyen_2 (capital_total_2 / count boats with [team = 2])
   if any? boats with [team = 2] [
     set capital_moyen_2 mean[capital_total] of boats with [team = 2]
-  ]
+    set captureTotalePetitEtrangers sum [capturePetitEtrangers] of boats with [team = 2]
+    set captureTotaleMoyenEtrangers sum [captureMoyenEtrangers] of boats with [team = 2]
+    set captureTotaleGrandEtrangers sum [captureGrandEtrangers] of boats with [team = 2]
+]
+
   ;print capital_moyen_2
   set biomassfished sum[capture] of boats
   set capitalTotal capital_moyen_1 + capital_moyen_2
