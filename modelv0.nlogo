@@ -42,6 +42,10 @@ patches-own[
  excluPeche ; bol
  excluPecheCells ; bol
  biomass ; kg
+; les classes de poissons
+  BiomassPetit  ; Biomasse des petits poissons
+  BiomassMoyen ; Biomasse des poissons moyens
+  BiomassGrand  ; Biomasse des grands poissons
 ]
 
 villages-own[
@@ -122,6 +126,9 @@ to setup
   set kLakeCell (k / nblakeCells)
   ask lakeCells [
     set biomass kLakeCell
+    set BiomassPetit random-float (kLakeCell * 0.5) ; 50% de la biomasse pour les petits poissons
+    set BiomassMoyen random-float (kLakeCell * 0.3) ; 30% pour les poissons moyens
+    set BiomassGrand random-float (kLakeCell * 0.2) ; 20% pour les grands poissons
   ]
 
   ask patches with[lake = FALSE][set biomass 0]
