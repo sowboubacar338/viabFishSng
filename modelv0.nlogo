@@ -70,6 +70,12 @@ boats-own[
   firstExitSatifaction  ;; if 9999  = NA  MFET in mathias et al. 2024
   AST                   ;; mean sojourn time  in Mathias et al. 2024 as list
   ASTc                  ;; a count on MST to have one number per boat
+  capturePetitSenegalais  ; Capture de petits poissons par les Sénégalais
+  captureMoyenSenegalais  ; Capture de poissons moyens par les Sénégalais
+  captureGrandSenegalais  ; Capture de grands poissons par les Sénégalais
+  capturePetitEtrangers   ; Capture de petits poissons par les étrangers
+  captureMoyenEtrangers   ; Capture de poissons moyens par les étrangers
+  captureGrandEtrangers   ; Capture de grands poissons par les étrangers
 ]
 
 extensions [gis]
@@ -386,7 +392,7 @@ let _tailleMaille tailleMaille1 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxPetit [
     let _CapturePetit (PropBiomassPecheSenegalais / 100) * BiomassPetit
     set _capture _capture + _CapturePetit
-     
+    set capturePetitSenegalais capturePetitSenegalais + _CapturePetit
     ask patch-here [
       set BiomassPetit BiomassPetit - _CapturePetit
     ]
@@ -396,7 +402,7 @@ let _tailleMaille tailleMaille1 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxMoyen [
     let _CaptureMoyen (PropBiomassPecheSenegalais / 100) * BiomassMoyen
     set _capture _capture + _CaptureMoyen
-    
+    set captureMoyenSenegalais captureMoyenSenegalais + _CaptureMoyen
     ask patch-here [
       set BiomassMoyen BiomassMoyen - _CaptureMoyen
     ]
@@ -406,7 +412,7 @@ let _tailleMaille tailleMaille1 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxGrand [
     let _CaptureGrand (PropBiomassPecheSenegalais / 100) * BiomassGrand
     set _capture _capture + _CaptureGrand
-    
+    set captureGrandSenegalais captureGrandSenegalais + _CaptureGrand
     ask patch-here [
       set BiomassGrand BiomassGrand - _CaptureGrand
     ]
@@ -450,7 +456,7 @@ let _tailleMaille tailleMaille2 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxPetit [
     let _CapturePetit (PropBiomassPecheEtrangers / 100) * BiomassPetit
     set _capture _capture + _CapturePetit
-    
+    set capturePetitEtrangers capturePetitEtrangers + _CapturePetit
     ask patch-here [
       set BiomassPetit BiomassPetit - _CapturePetit
     ]
@@ -460,7 +466,7 @@ let _tailleMaille tailleMaille2 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxMoyen [
     let _CaptureMoyen (PropBiomassPecheEtrangers / 100) * BiomassMoyen
     set _capture _capture + _CaptureMoyen
-    
+    set captureMoyenEtrangers captureMoyenEtrangers + _CaptureMoyen
     ask patch-here [
       set BiomassMoyen BiomassMoyen - _CaptureMoyen
     ]
@@ -470,7 +476,7 @@ let _tailleMaille tailleMaille2 ; Taille de la maille du filet
   if _tailleMaille <= tailleMaxGrand [
     let _CaptureGrand (PropBiomassPecheEtrangers / 100) * BiomassGrand
     set _capture _capture + _CaptureGrand
-    
+    set captureGrandEtrangers captureGrandEtrangers + _CaptureGrand  
     ask patch-here [
       set BiomassGrand BiomassGrand - _CaptureGrand
     ]
