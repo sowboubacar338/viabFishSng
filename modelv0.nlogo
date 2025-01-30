@@ -101,6 +101,10 @@ to setup
   set tailleMaxMoyen 100
   set tailleMinGrang 101
   set tailleMaxGrand 500
+ask boats [
+    set tailleMaille1 random-normal 50 10 ;  maille de 50 mm en moyenne avec un écart-type de 10
+    set tailleMaille2 random-normal 50 10 ;  maille de 50 mm en moyenne avec un écart-type de 10
+  ]
 
   ask patches [
     set pcolor gray
@@ -375,6 +379,40 @@ end
 
 
 to fishingSenegalais
+let _tailleMaille tailleMaille1 ; Taille de la maille du filet
+  let _capture 0 ; Capture totale
+
+  ;; Capture des petits poissons
+  if _tailleMaille <= tailleMaxPetit [
+    let _CapturePetit (PropBiomassPecheSenegalais / 100) * BiomassPetit
+    set _capture _capture + _CapturePetit
+     
+    ask patch-here [
+      set BiomassPetit BiomassPetit - _CapturePetit
+    ]
+  ]
+
+  ;; Capture des poissons moyens
+  if _tailleMaille <= tailleMaxMoyen [
+    let _CaptureMoyen (PropBiomassPecheSenegalais / 100) * BiomassMoyen
+    set _capture _capture + _CaptureMoyen
+    
+    ask patch-here [
+      set BiomassMoyen BiomassMoyen - _CaptureMoyen
+    ]
+  ]
+
+  ;; Capture des grands poissons
+  if _tailleMaille <= tailleMaxGrand [
+    let _CaptureGrand (PropBiomassPecheSenegalais / 100) * BiomassGrand
+    set _capture _capture + _CaptureGrand
+    
+    ask patch-here [
+      set BiomassGrand BiomassGrand - _CaptureGrand
+    ]
+  ]
+
+  set capture _capture
   let _fishAvalableHere [biomass] of patch-here
 
   ; Proportion de poisson capturée par le filet sur le patch
@@ -405,6 +443,40 @@ to fishingSenegalais
 end
 
 to fishingEtrangers
+let _tailleMaille tailleMaille2 ; Taille de la maille du filet
+  let _capture 0 ; Capture totale
+
+  ;; Capture des petits poissons
+  if _tailleMaille <= tailleMaxPetit [
+    let _CapturePetit (PropBiomassPecheEtrangers / 100) * BiomassPetit
+    set _capture _capture + _CapturePetit
+    
+    ask patch-here [
+      set BiomassPetit BiomassPetit - _CapturePetit
+    ]
+  ]
+
+  ;; Capture des poissons moyens
+  if _tailleMaille <= tailleMaxMoyen [
+    let _CaptureMoyen (PropBiomassPecheEtrangers / 100) * BiomassMoyen
+    set _capture _capture + _CaptureMoyen
+    
+    ask patch-here [
+      set BiomassMoyen BiomassMoyen - _CaptureMoyen
+    ]
+  ]
+
+  ;; Capture des grands poissons
+  if _tailleMaille <= tailleMaxGrand [
+    let _CaptureGrand (PropBiomassPecheEtrangers / 100) * BiomassGrand
+    set _capture _capture + _CaptureGrand
+    
+    ask patch-here [
+      set BiomassGrand BiomassGrand - _CaptureGrand
+    ]
+  ]
+
+  set capture _capture
   let _fishAvalableHere [biomass] of patch-here
 
   ; Proportion de poisson capturée par le filet sur le patch
