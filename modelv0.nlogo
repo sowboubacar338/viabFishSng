@@ -411,27 +411,37 @@ let _tailleMaille tailleMaille1 ; Taille de la maille du filet
   let _capture 0 ; Capture totale
 
   ;; Capture des petits poissons
-  if _tailleMaille <= tailleMaxPetit [
+  if _tailleMaille >= tailleMinPetit AND _tailleMaille <= tailleMaxPetit [
     let _CapturePetit (PropBiomassPecheSenegalais / 100) * BiomassPetit
-    set _capture _capture + _CapturePetit
+    let _CaptureMoyen (PropBiomassPecheSenegalais / 100) * BiomassMoyen
+    let _CaptureGrand (PropBiomassPecheSenegalais / 100) * BiomassGrand
+    set _capture _capture + _CapturePetit + _CaptureMoyen + _CaptureGrand
+
     set capturePetitSenegalais capturePetitSenegalais + _CapturePetit
+    set captureMoyenSenegalais captureMoyenSenegalais + _CaptureMoyen
+    set captureGrandSenegalais captureGrandSenegalais + _CaptureGrand
     ask patch-here [
       set BiomassPetit BiomassPetit - _CapturePetit
+      set BiomassMoyen BiomassMoyen - _CaptureMoyen
+      set BiomassGrand BiomassGrand - _CaptureGrand
     ]
   ]
 
   ;; Capture des poissons moyens
-  if _tailleMaille <= tailleMaxMoyen [
+  if _tailleMaille >= tailleMinMoyen AND _tailleMaille <= tailleMaxMoyen [
     let _CaptureMoyen (PropBiomassPecheSenegalais / 100) * BiomassMoyen
-    set _capture _capture + _CaptureMoyen
+    let _CaptureGrand (PropBiomassPecheSenegalais / 100) * BiomassGrand
+    set _capture _capture + _CaptureMoyen + _CaptureGrand
     set captureMoyenSenegalais captureMoyenSenegalais + _CaptureMoyen
+    set captureGrandSenegalais captureGrandSenegalais + _CaptureGrand
     ask patch-here [
       set BiomassMoyen BiomassMoyen - _CaptureMoyen
+      set BiomassGrand BiomassGrand - _CaptureGrand
     ]
   ]
 
   ;; Capture des grands poissons
-  if _tailleMaille <= tailleMaxGrand [
+  if _tailleMaille >= tailleMinGrand AND _tailleMaille <= tailleMaxGrand [
     let _CaptureGrand (PropBiomassPecheSenegalais / 100) * BiomassGrand
     set _capture _capture + _CaptureGrand
     set captureGrandSenegalais captureGrandSenegalais + _CaptureGrand
