@@ -45,7 +45,7 @@ globals [
  tailleMaxPetit   ; Taille maximale des petits poissons
  tailleMinMoyen  ; Taille minimale des poissons moyens
  tailleMaxMoyen  ; Taille maximale des poissons moyens
- tailleMinGrang   ; Taille minimale des grands poissons
+ tailleMinGrand   ; Taille minimale des grands poissons
  tailleMaxGrand   ; Taille maximale des grands poissons
 
 ;;Captue totale par classe pour chaque equipe de pêcheur
@@ -118,7 +118,7 @@ to setup
   set tailleMaxPetit 50
   set tailleMaxPetit 51
   set tailleMaxMoyen 100
-  set tailleMinGrang 101
+  set tailleMinGrand 101
   set tailleMaxGrand 500
 ask boats [
     set tailleMaille1 random-normal 50 10 ;  maille de 50 mm en moyenne avec un écart-type de 10
@@ -613,6 +613,7 @@ end
 
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
+  set sumBiomass sum [BiomassPetit + BiomassMoyen + BiomassGrand] of lakeCells
 set sumBiomassClass sum [BiomassPetit + BiomassMoyen + BiomassGrand] of lakeCells
 set sumBiomassPetit sum [BiomassPetit] of lakeCells
 set sumBiomassMoyen sum [BiomassMoyen] of lakeCells
