@@ -614,7 +614,6 @@ end
 to statSummary
   set sumBiomass sum [biomass] of lakeCells
   set sumBiomass sum [BiomassPetit + BiomassMoyen + BiomassGrand] of lakeCells
-set sumBiomassClass sum [BiomassPetit + BiomassMoyen + BiomassGrand] of lakeCells
 set sumBiomassPetit sum [BiomassPetit] of lakeCells
 set sumBiomassMoyen sum [BiomassMoyen] of lakeCells
 set sumBiomassGrand sum [BiomassGrand] of lakeCells
